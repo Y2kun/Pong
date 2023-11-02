@@ -7,9 +7,9 @@ ENABLE_2PLAYERMODE = false
 SLOWMOTION = false # Halves the Game speed
 
 #Values
-WIN_THRESSHOLD = 1 #How many Points are required for Victory
+WIN_THRESSHOLD = 10 #How many Points are required for Victory
 PLAYER_SPEED   = 4
-ENEMY_SPEED    = 3 #The Speed of the Ai
+ENEMY_SPEED    = 3  #The Speed of the Ai
 
 #Should not be changed
 SCREEN_HEIGHT = 720
@@ -17,8 +17,8 @@ SCREEN_WIDTH = 1280
 
 #Possible Changes
 
-#Timer before next round
-#Ingame config
+#Timer before the next round
+#Ingame Config
 
 def tick args
     args.gtk.request_quit if args.inputs.keyboard.key_held.escape
