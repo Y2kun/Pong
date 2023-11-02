@@ -11,10 +11,6 @@ WIN_THRESSHOLD = 10 #How many Points are required for Victory
 PLAYER_SPEED   = 4
 ENEMY_SPEED    = 3  #The Speed of the Ai
 
-#Should not be changed
-SCREEN_HEIGHT = 720
-SCREEN_WIDTH = 1280
-
 #Possible Changes
 
 #Timer before the next round
@@ -37,16 +33,16 @@ def tick args
     #Wins
     if args.state.player.score >= WIN_THRESSHOLD
         args.outputs.primitives << {primitive_marker: :solid, x: 0, y: 0,
-                                 w: SCREEN_WIDTH, h: SCREEN_HEIGHT, r: 0, b: 0, g: 0}
-        args.outputs.labels << {x: SCREEN_WIDTH * 0.5 - 100, y: SCREEN_HEIGHT * 0.5 + 55, text: "Victory for Player 1", r: 255, b: 255, g: 255}
+                                 w: args.grid.w, h: args.grid.h, r: 0, b: 0, g: 0}
+        args.outputs.labels << {x: args.grid.w * 0.5 - 100, y: args.grid.h * 0.5 + 55, text: "Victory for Player 1", r: 255, b: 255, g: 255}
     elsif ENABLE_2PLAYERMODE && args.state.player2.score >= WIN_THRESSHOLD
         args.outputs.primitives << {primitive_marker: :solid, x: 0, y: 0,
-                                 w: SCREEN_WIDTH, h: SCREEN_HEIGHT, r: 0, b: 0, g: 0}
-        args.outputs.labels << {x: SCREEN_WIDTH * 0.5 - 100, y: SCREEN_HEIGHT * 0.5 + 55, text: "Victory for Player 2", r: 255, b: 255, g: 255}
+                                 w: args.grid.w, h: args.grid.h, r: 0, b: 0, g: 0}
+        args.outputs.labels << {x: args.grid.w * 0.5 - 100, y: args.grid.h * 0.5 + 55, text: "Victory for Player 2", r: 255, b: 255, g: 255}
     elsif !ENABLE_2PLAYERMODE && args.state.enemy.score >= WIN_THRESSHOLD
         args.outputs.primitives << {primitive_marker: :solid, x: 0, y: 0,
-                                 w: SCREEN_WIDTH, h: SCREEN_HEIGHT, r: 0, b: 0, g: 0}
-        args.outputs.labels << {x: SCREEN_WIDTH * 0.5 - 100, y: SCREEN_HEIGHT * 0.5 + 55, text: "Victory for the Enemy", r: 255, b: 255, g: 255}
+                                 w: args.grid.w, h: args.grid.h, r: 0, b: 0, g: 0}
+        args.outputs.labels << {x: args.grid.w * 0.5 - 100, y: args.grid.h * 0.5 + 55, text: "Victory for the Enemy", r: 255, b: 255, g: 255}
     else
         #If no one wins
         player.update(args)
@@ -63,11 +59,11 @@ def tick args
     end
 
     #text
-    args.outputs.labels << {x: SCREEN_WIDTH * 0.5 - 100 * 0.5, y: SCREEN_HEIGHT - 30, text: "p1 #{player.score}", r: 255, g: 255, b: 255}
+    args.outputs.labels << {x: args.grid.w * 0.5 - 100 * 0.5, y: args.grid.h - 30, text: "p1 #{player.score}", r: 255, g: 255, b: 255}
     if ENABLE_2PLAYERMODE
-        args.outputs.labels << {x: SCREEN_WIDTH * 0.5 + 50  * 0.5, y: SCREEN_HEIGHT - 30, text: "p2 #{player2.score}", r: 255, g: 255, b: 255}
+        args.outputs.labels << {x: args.grid.w * 0.5 + 50  * 0.5, y: args.grid.h - 30, text: "p2 #{player2.score}", r: 255, g: 255, b: 255}
     else
-        args.outputs.labels << {x: SCREEN_WIDTH * 0.5 + 50  * 0.5, y: SCREEN_HEIGHT - 30, text: "e  #{enemy.score}", r: 255, g: 255, b: 255}
+        args.outputs.labels << {x: args.grid.w * 0.5 + 50  * 0.5, y: args.grid.h - 30, text: "e  #{enemy.score}", r: 255, g: 255, b: 255}
     end
 end
 
@@ -77,7 +73,7 @@ class Paddle
         @width = 15
         @heigth = 150
         @tone = 255
-        @pos = V[0, SCREEN_HEIGHT * 0.5 - heigth * 0.5]
+        @pos = V[0, args.grid.h * 0.5 - heigth * 0.5]
         @velocity = V[0, 0]
         @speed = PLAYER_SPEED
         @score = 0
@@ -89,7 +85,7 @@ class Paddle
         @velocity = V[0, 0] if velocity.length < 0.1 # better number
         #Paddle Movement limiter
         @pos.y = 0 if pos.y < 0
-        @pos.y = SCREEN_HEIGHT - heigth if pos.y > SCREEN_HEIGHT - heigth
+        @pos.y = args.grid.h - heigth if pos.y > args.grid.h - heigth
     end
 
     def draw(args)
@@ -119,7 +115,7 @@ end
 class Player2 < Paddle
     def initialize
         super
-        @pos = V[SCREEN_WIDTH - width, SCREEN_HEIGHT * 0.5 - heigth * 0.5]
+        @pos = V[args.grid.w - width, args.grid.h * 0.5 - heigth * 0.5]
     end
 
     def update(args)
@@ -136,7 +132,7 @@ end
 class Enemy < Paddle
     def initialize
         super
-        @pos = V[SCREEN_WIDTH - width, SCREEN_HEIGHT * 0.5 - heigth * 0.5]
+        @pos = V[args.grid.w - width, args.grid.h * 0.5 - heigth * 0.5]
         @speed = ENEMY_SPEED
     end
 
@@ -153,7 +149,7 @@ class Ball
         @width = 25
         @heigth = 25
         @tone = 200
-        @pos = V[SCREEN_WIDTH * 0.5 - width * 0.5, SCREEN_HEIGHT * 0.5 - heigth * 0.5]
+        @pos = V[args.grid.w * 0.5 - width * 0.5, args.grid.h * 0.5 - heigth * 0.5]
         @velocity = V[[10, -10].sample, 0]
         @speed = 2
     end
@@ -178,7 +174,7 @@ class Ball
         if pos.y < 0
             @velocity = V[@velocity.x, -velocity.y]
             hit(args)
-        elsif pos.y > SCREEN_HEIGHT - @heigth
+        elsif pos.y > args.grid.h - @heigth
             @velocity = V[@velocity.x, -velocity.y]
             hit(args)
         end
@@ -203,23 +199,23 @@ class Ball
                 args.state.enemy.score += 1
             end
             reset(args)
-        elsif @pos.x > SCREEN_WIDTH - @width
+        elsif @pos.x > args.grid.w - @width
             args.state.player.score += 1
             reset(args)
         end
     end
 
     def reset(args)
-        args.state.player.pos = V[0, SCREEN_HEIGHT * 0.5 - args.state.player.heigth * 0.5]
+        args.state.player.pos = V[0, args.grid.h * 0.5 - args.state.player.heigth * 0.5]
         args.state.player.velocity = V[0, 0]
         if ENABLE_2PLAYERMODE
-            args.state.player2.pos = V[SCREEN_WIDTH - args.state.player2.width, SCREEN_HEIGHT * 0.5 - args.state.player2.heigth * 0.5]
+            args.state.player2.pos = V[args.grid.w - args.state.player2.width, args.grid.h * 0.5 - args.state.player2.heigth * 0.5]
             args.state.player2.velocity = V[0, 0]
         else
-            args.state.enemy.pos = V[SCREEN_WIDTH - args.state.enemy.width, SCREEN_HEIGHT * 0.5 - args.state.enemy.heigth * 0.5]
+            args.state.enemy.pos = V[args.grid.w - args.state.enemy.width, args.grid.h * 0.5 - args.state.enemy.heigth * 0.5]
             args.state.enemy.velocity = V[0, 0]
         end
-        @pos = V[SCREEN_WIDTH * 0.5 - width * 0.5, SCREEN_HEIGHT * 0.5 - heigth * 0.5]
+        @pos = V[args.grid.w * 0.5 - width * 0.5, args.grid.h * 0.5 - heigth * 0.5]
         @velocity = V[[10, -10].sample, 0]
     end
 
