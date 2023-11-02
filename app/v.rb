@@ -77,4 +77,8 @@ class V
         c, s = Math.cos(degrees / f), Math.sin(degrees / f)
         v + V[(x - v.x) * c - (y - v.y) * s, (x - v.x) * s + (y - v.y) * c]
     end
+
+    def eql?(other)
+        other.class == V && other.x == x && other.y == y
+    end
 end
