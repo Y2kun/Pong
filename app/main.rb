@@ -22,13 +22,13 @@ def tick args
     args.gtk.set_window_fullscreen ENABLE_FULLSCREEN
     args.outputs.background_color = [20, 20, 20]
     args.gtk.slowmo! 2 if SLOWMOTION
-    player = args.state.player ||= Player.new()
+    player = args.state.player ||= Player.new(args)
     if ENABLE_2PLAYERMODE
-        player2 = args.state.player2 ||= Player2.new()
+        player2 = args.state.player2 ||= Player2.new(args)
     else
-        enemy = args.state.enemy ||= Enemy.new()
+        enemy = args.state.enemy ||= Enemy.new(args)
     end
-    ball = args.state.ball ||= Ball.new()
+    ball = args.state.ball ||= Ball.new(args)
 
     #Wins
     if args.state.player.score >= WIN_THRESSHOLD
@@ -69,7 +69,7 @@ end
 
 class Paddle
     attr_accessor :width, :heigth, :tone, :pos, :velocity, :speed, :score
-    def initialize
+    def initialize(args)
         @width = 15
         @heigth = 150
         @tone = 255
@@ -98,7 +98,7 @@ class Paddle
 end
 
 class Player < Paddle
-    def initialize
+    def initialize(args)
         super
     end
 
@@ -113,7 +113,7 @@ class Player < Paddle
 end
 
 class Player2 < Paddle
-    def initialize
+    def initialize(args)
         super
         @pos = V[args.grid.w - width, args.grid.h * 0.5 - heigth * 0.5]
     end
@@ -130,7 +130,7 @@ class Player2 < Paddle
 end
 
 class Enemy < Paddle
-    def initialize
+    def initialize(args)
         super
         @pos = V[args.grid.w - width, args.grid.h * 0.5 - heigth * 0.5]
         @speed = ENEMY_SPEED
@@ -145,7 +145,7 @@ end
 
 class Ball
     attr_accessor :width, :heigth, :tone, :pos, :velocity, :speed
-    def initialize
+    def initialize(args)
         @width = 25
         @heigth = 25
         @tone = 200
