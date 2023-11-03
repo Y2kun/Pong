@@ -13,8 +13,8 @@ Control + r = Restart Game
 
 The Controls for Player 1 are
 
-w|Stick up = Up
-s|Stick up = Down
+w = Up
+s = Down
 
 The Controls for Player 2 are
 
