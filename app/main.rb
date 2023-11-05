@@ -21,24 +21,18 @@ def initialize(args)
     #config data
     args.state.fullscreen        = true
     args.state.sound             = false
-    args.state.slowmo_amount     = 1
     args.state.win_threshhold    = 1 #How many Points are required for Victory
     args.state.two_player_mode   = true
     args.state.p1_and_p2_speed   = 4
     args.state.ai1_and_ai2_speed = 3
     #saves
-    args.state.scene             = Game.new(args)
+    args.state.scene             = MainMenu.new(args)
     args.state.paused            = true
     args.state.current_time      = Time.now()
 end
 
 def window(args)
-    args.gtk.request_quit if args.inputs.keyboard.key_held.escape
-    args.gtk.slowmo! args.state.slowmo_amount
-    # How many times the game is slower,
-    # so 2 would make the game half the speed,
-    # below one doesn`t make a diffrence
-    #the above is the tooltip
+    args.state.scene = MainMenu.new(args) if args.inputs.keyboard.key_held.escape
     args.gtk.set_window_fullscreen args.state.fullscreen
     args.outputs.background_color = [20, 20, 20]
 end
@@ -51,12 +45,11 @@ class Paddle
         @tone = 255
         @pos = V[0, args.grid.h * 0.5 - heigth * 0.5]
         @velocity = V[0, 0]
-        @speed = args.state.p1_and_p2_speed.tap{|v| puts v.inspect }
+        @speed = args.state.p1_and_p2_speed
         @score = 0
     end
 
     def update(args)
-        puts [@velocity, @speed].inspect
         @pos += @velocity * @speed
         @velocity *= 0.8 # "Air Resistance"
         @velocity = V[0, 0] if @velocity.length < 0.1 # better number
