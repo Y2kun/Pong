@@ -21,7 +21,7 @@ def initialize(args)
     #config data
     args.state.fullscreen        = true
     args.state.sound             = false
-    args.state.win_threshhold    = 1 #How many Points are required for Victory
+    args.state.win_threshhold    = 10 #How many Points are required for Victory
     args.state.two_player_mode   = true
     args.state.p1_and_p2_speed   = 4
     args.state.ai1_and_ai2_speed = 3
