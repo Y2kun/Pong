@@ -116,7 +116,7 @@ class Win
     end
 
     def text
-        "Victory for #{winning_player}: Score #{winning_player.score}"
+        "Victory for #{winning_player}"
     end
 
     def restart(args)
