@@ -1,5 +1,4 @@
 class MainMenu
-    #attr_accessor 
     def initialize(args)
         @offset = [0] * 4
         @tone = {r: 255, g: 255, b: 255}
@@ -17,8 +16,8 @@ class MainMenu
                 @offset[index] = 5
                 args.state.scene = Game.new(args) if index == 0 && args.inputs.mouse.click
                 args.gtk.notify! "This is not implimented yet" if index == 1 && args.inputs.mouse.click
-                #args.state.scene = Options.new(args) if index == 2 && args.inputs.mouse.click
-                args.gtk.notify! "This is not implimented yet" if index == 2 && args.inputs.mouse.click
+                args.state.scene = Options.new(args) if index == 2 && args.inputs.mouse.click
+                #args.gtk.notify! "This is not implimented yet" if index == 2 && args.inputs.mouse.click
                 args.gtk.request_quit if index == 3 && args.inputs.mouse.click
             else
                 @offset[index] = 0
@@ -36,17 +35,38 @@ class MainMenu
 end
 
 class Options
-    #attr_accessor 
     def initialize(args)
-        #super
+        @offset = [0] * 4
+        @tone = {r: 255, g: 255, b: 255}
+        @font = "data/fonts/TimeburnerBold.ttf"
     end
-
+    
     def update(args)
-        #content
+        buttons = [{x: args.grid.w * 0.15 + @offset[0], y: args.grid.h * 0.75 - 35, w: 210 + @offset[0] * 12.5, h: 35},
+                   {x: args.grid.w * 0.15 + @offset[1], y: args.grid.h * 0.7  - 29, w: 210 + @offset[1] * 13  , h: 29 - @offset[1] * 0.5},
+                   {x: args.grid.w * 0.15 + @offset[2], y: args.grid.h * 0.65 - 35, w: 85  + @offset[2] * 5   , h: 35},
+                   {x: args.grid.w * 0.15 + @offset[3], y: args.grid.h * 0.6  - 35, w: 110 + @offset[3] * 7   , h: 35}]
+        #when hovering over a text option, should "highlight it"
+        buttons.each_with_index do |button, index|
+            if args.inputs.mouse.intersect_rect?(button)
+                @offset[index] = 5
+                args.gtk.notify! "This is not implimented yet" if index == 0 && args.inputs.mouse.click
+                args.gtk.notify! "This is not implimented yet" if index == 1 && args.inputs.mouse.click
+                args.gtk.notify! "This is not implimented yet" if index == 2 && args.inputs.mouse.click
+                args.gtk.notify! "This is not implimented yet" if index == 3 && args.inputs.mouse.click
+            else
+                @offset[index] = 0
+            end
+        end
     end
 
     def draw(args)
-        #content
+        args.outputs.labels << @tone.merge(x: args.grid.w * 0.1 , y: args.grid.h * 0.85, text: "Options"    , size_enum: 15, font: @font)
+        args.outputs.labels << @tone.merge(x: args.grid.w * 0.15 + @offset[0], y: args.grid.h * 0.75, text: "Begin a new Game" , size_enum: 5 + @offset[0], font: @font)
+        args.outputs.labels << @tone.merge(x: args.grid.w * 0.15 + @offset[1], y: args.grid.h * 0.7 , text: "Continue the Game", size_enum: 5 + @offset[1], font: @font)
+        args.outputs.labels << @tone.merge(x: args.grid.w * 0.15 + @offset[2], y: args.grid.h * 0.65, text: "Options"          , size_enum: 5 + @offset[2], font: @font)
+        args.outputs.labels << @tone.merge(x: args.grid.w * 0.15 + @offset[3], y: args.grid.h * 0.6 , text: "Quit Game"        , size_enum: 5 + @offset[3], font: @font)
+        args.outputs.labels << {x: 50, y: 50, text: "Esc to return to Main Menu", r: 255, g: 255, b: 255, font: "data/fonts/TimeburnerBold.ttf"}
     end
 end
 
@@ -90,6 +110,7 @@ class Game
             args.outputs.labels << {x: args.grid.w * 0.6, y: args.grid.h - 30, text: "e  #{@enemy.score}", size_enum: 2, r: 255, g: 255, b: 255}
         end
         @ball.draw(args)
+        args.outputs.labels << {x: 50, y: 50, text: "Esc to return to Main Menu", r: 255, g: 255, b: 255, font: "data/fonts/TimeburnerBold.ttf"}
     end
 
     def winner(args)
@@ -113,6 +134,7 @@ class Win
         args.outputs.primitives << {primitive_marker: :solid, x: 0, y: 0,
                                     w: args.grid.w, h: args.grid.h, r: 0, b: 0, g: 0}
         args.outputs.labels << {x: args.grid.w * 0.35, y: args.grid.h * 0.5 + 55, text: text, size_enum: 4, r: 255, b: 255, g: 255}
+        args.outputs.labels << {x: 50, y: 50, text: "Esc to return to Main Menu", r: 255, g: 255, b: 255, font: "data/fonts/TimeburnerBold.ttf"}
     end
 
     def text
