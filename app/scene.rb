@@ -1,11 +1,19 @@
 class MainMenu
+    attr_accessor :ai1, :ai2, :ball
     def initialize(args)
+        @ai1 = args.state.ai1 = Ai1.new(args)
+        @ai2 = args.state.ai2 = Ai2.new(args)
+        @ball = args.state.ball = Ball.new(args, [V[5, 5], V[-5, -5], V[5, -5], V[-5, 5]].sample)
         @offset = [0] * 4
         @tone = {r: 255, g: 255, b: 255}
         @font = "data/fonts/TimeburnerBold.ttf"
     end
 
     def update(args)
+        @ai1.update(args)
+        @ai2.update(args)
+        @ball.update(args)
+
         buttons = [{x: args.grid.w * 0.15 - @offset[0], y: args.grid.h * 0.75 - 35, w: 210 + @offset[0] * 12.5, h: 35},
                    {x: args.grid.w * 0.15 - @offset[1], y: args.grid.h * 0.7  - 29, w: 210 + @offset[1] * 13  , h: 29 - @offset[1] * 0.5},
                    {x: args.grid.w * 0.15 - @offset[2], y: args.grid.h * 0.65 - 35, w: 85  + @offset[2] * 5   , h: 35},
@@ -27,6 +35,10 @@ class MainMenu
     end
 
     def draw(args)
+        @ai1.draw(args)
+        @ai2.draw(args)
+        @ball.draw(args)
+
         args.outputs.labels << @tone.merge(x: args.grid.w * 0.1 , y: args.grid.h * 0.85, text: "Pong the Game"    , size_enum: 15, font: @font)
         args.outputs.labels << @tone.merge(x: args.grid.w * 0.15 - @offset[0], y: args.grid.h * 0.75, text: "Begin a new Game" , size_enum: 5 + @offset[0], font: @font)
         args.outputs.labels << @tone.merge(x: args.grid.w * 0.15 - @offset[1], y: args.grid.h * 0.7 , text: "Continue the Game", size_enum: 5 + @offset[1], font: @font)
@@ -36,7 +48,11 @@ class MainMenu
 end
 
 class Options
+    attr_accessor :ai1, :ai2, :ball
     def initialize(args)
+        @ai1 = args.state.ai1 = Ai1.new(args)
+        @ai2 = args.state.ai2 = Ai2.new(args)
+        @ball = args.state.ball = Ball.new(args, [V[5, 5], V[-5, -5], V[5, -5], V[-5, 5]].sample)
         @offset = [0] * 6
         @tone = {r: 255, g: 255, b: 255}
         @font = "data/fonts/TimeburnerBold.ttf"
@@ -49,6 +65,10 @@ class Options
     end
     
     def update(args)
+        @ai1.update(args)
+        @ai2.update(args)
+        @ball.update(args)
+        
         higlight_box = [{x: args.grid.w * 0.3 - @offset[0] - 50, y: args.grid.h * 0.75 - 35, w: 110 + @offset[0] * 8   + 50, h: 35},
                         {x: args.grid.w * 0.3 - @offset[1] - 50, y: args.grid.h * 0.65 - 29, w: 70  + @offset[1] * 5   + 50, h: 30},
                         {x: args.grid.w * 0.3 - @offset[2] - 50, y: args.grid.h * 0.55 - 35, w: 88  + @offset[2] * 5.5 + 50, h: 35},
@@ -80,6 +100,9 @@ class Options
     end
 
     def draw(args)
+        @ai1.draw(args)
+        @ai2.draw(args)
+        @ball.draw(args)
         #Text
         args.outputs.labels << @tone.merge(x: args.grid.w * 0.45            , y: args.grid.h * 0.9 , text: "Options"       , size_enum: 15             , font: @font)
         args.outputs.labels << @tone.merge(x: args.grid.w * 0.3 - @offset[0], y: args.grid.h * 0.75, text: "Fullscreen"    , size_enum: 5  + @offset[0], font: @font)
@@ -100,12 +123,12 @@ class Options
 end
 
 class Game
-    attr_accessor :player, :player2, :ball, :enemy
+    attr_accessor :player1, :player2, :ball, :ai2
     def initialize(args)
-        @player = args.state.player = Player.new(args)
+        @player1 = args.state.player1 = Player1.new(args)
         @player2 = args.state.player2 = Player2.new(args)
-        @enemy = args.state.enemy = Enemy.new(args)
-        @ball = args.state.ball = Ball.new(args)
+        @ai2 = args.state.ai2 = Ai2.new(args)
+        @ball = args.state.ball = Ball.new(args, V[0, 0])
     end
 
     def update(args)
@@ -113,31 +136,31 @@ class Game
             args.state.scene = Win.new(args, winning_player)
             return
         end
-        @player.update(args)
+        @player1.update(args)
         if args.state.two_player_mode
             @player2.update(args)
         else
-            @enemy.update(args)
+            @ai2.update(args)
         end
         @ball.update(args) if !args.state.paused
     end
 
     def draw(args)
-        @player.draw(args)
-        args.outputs.labels << {x: args.grid.w * 0.4, y: args.grid.h - 30, text: "p1 #{@player.score}", size_enum: 2, r: 255, g: 255, b: 255}
+        @player1.draw(args)
+        args.outputs.labels << {x: args.grid.w * 0.4, y: args.grid.h - 30, text: "p1 #{@player1.score}", size_enum: 2, r: 255, g: 255, b: 255}
         if args.state.two_player_mode
             @player2.draw(args)
             args.outputs.labels << {x: args.grid.w * 0.6, y: args.grid.h - 30, text: "p2 #{@player2.score}", size_enum: 2, r: 255, g: 255, b: 255}
         else
-            @enemy.draw(args)
-            args.outputs.labels << {x: args.grid.w * 0.6, y: args.grid.h - 30, text: "e  #{@enemy.score}", size_enum: 2, r: 255, g: 255, b: 255}
+            @ai2.draw(args)
+            args.outputs.labels << {x: args.grid.w * 0.6, y: args.grid.h - 30, text: "e  #{@ai2.score}", size_enum: 2, r: 255, g: 255, b: 255}
         end
         @ball.draw(args)
         args.outputs.labels << {x: 50, y: 50, text: "Esc to return to Main Menu", r: 255, g: 255, b: 255, font: "data/fonts/TimeburnerBold.ttf"}
     end
 
     def winner(args)
-        [player, player2, enemy].compact.find{|e| e.score >= args.state.win_threshhold }
+        [player1, player2, ai2].compact.find{|e| e.score >= args.state.win_threshhold }
     end
 end
 
