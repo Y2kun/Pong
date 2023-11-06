@@ -24,7 +24,7 @@ def initialize(args)
     args.state.win_threshhold    = 10 #How many Points are required for Victory
     args.state.two_player_mode   = false
     args.state.p1_and_p2_speed   = 4
-    args.state.ai1_and_ai2_speed = 3.5
+    args.state.ai1_and_ai2_speed = 5
     #saves
     args.state.scene             = MainMenu.new(args)
     args.state.paused            = true
