@@ -6,7 +6,6 @@ require "app/scene.rb"
 #dark and light mode
 #only ai playing #possibly the background for the main menu and options
 #better paddle scripts
-#scenes
 #Ingame Config
 
 def tick args
@@ -21,12 +20,12 @@ def initialize(args)
     #config data
     args.state.fullscreen        = true
     args.state.sound             = true
-    args.state.win_threshhold    = 10 #How many Points are required for Victory
     args.state.two_player_mode   = false
     args.state.p1_and_p2_speed   = 4
     args.state.ai1_and_ai2_speed = 5
+    args.state.win_threshhold    = 10 #How many Points are required for Victory
     #saves
-    args.state.scene             = MainMenu.new(args)
+    args.state.scene             = MainMenu.new(args)#MainMenu.new(args)
     args.state.paused            = true
     args.state.current_time      = Time.now()
 end
