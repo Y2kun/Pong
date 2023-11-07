@@ -3,7 +3,7 @@ class MainMenu
     def initialize(args)
         @ai1 = Ai1.new(args)
         @ai2 = Ai2.new(args)
-        @ball = args.state.ball = Ball.new(args, @ai1, @ai2, [V[0, 2], V[0, -2]].sample)
+        @ball = args.state.ball = Ball.new(args, @ai1, @ai2, [V[0, 5], V[0, -5]].sample)
         @offset = [0] * 4
         @tone = {r: 255, g: 255, b: 255}
         @font = "data/fonts/TimeburnerBold.ttf"
@@ -68,7 +68,7 @@ class Options
     def initialize(args)
         @ai1 = Ai1.new(args)
         @ai2 = Ai2.new(args)
-        @ball = args.state.ball = Ball.new(args, @ai1, @ai2, [V[0, 2], V[0, -2]].sample)
+        @ball = args.state.ball = Ball.new(args, @ai1, @ai2, [V[0, 5], V[0, -5]].sample)
         @offset = [0] * 6
         @tone = {r: 255, g: 255, b: 255}
         @font = "data/fonts/TimeburnerBold.ttf"

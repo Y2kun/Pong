@@ -1,7 +1,7 @@
 require "app/v.rb"
 require "app/scene.rb"
 
-#                           Possible Changes
+#     Possible Changes
 #Timer before the next round
 #dark and light mode
 #better paddle scripts
@@ -21,7 +21,7 @@ def initialize(args)
     args.state.sound             = true
     args.state.two_player_mode   = false
     args.state.p1_and_p2_speed   = 4
-    args.state.ai1_and_ai2_speed = 8
+    args.state.ai1_and_ai2_speed = 1.2
     args.state.win_threshhold    = 10 #How many Points are required for Victory
     #saves
     args.state.scene             = MainMenu.new(args)#MainMenu.new(args)
@@ -115,7 +115,7 @@ class Ai1 < Paddle
 
     def update(args)
         target = V[0, args.state.ball.pos.y - heigth * 0.5]
-        @velocity = (target - V[0, @pos.y]).normalize
+        @velocity += (target - V[0, @pos.y]).normalize
         super(args)
     end
 
@@ -133,7 +133,7 @@ class Ai2 < Paddle
 
     def update(args)
         target = V[0, args.state.ball.pos.y - heigth * 0.5]
-        @velocity = (target - V[0, @pos.y]).normalize
+        @velocity += (target - V[0, @pos.y]).normalize
         super(args)
     end
 
