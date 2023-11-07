@@ -153,7 +153,7 @@ class Game
     def draw(args)
         @player1.draw(args)
         args.outputs.labels << {x: args.grid.w * 0.4, y: args.grid.h - 30, text: "p1 #{@player1.score}", size_enum: 2, r: 255, g: 255, b: 255}
-        if args.state.two_player_mode
+        if @player2
             @player2.draw(args)
             args.outputs.labels << {x: args.grid.w * 0.6, y: args.grid.h - 30, text: "p2 #{@player2.score}", size_enum: 2, r: 255, g: 255, b: 255}
         else
