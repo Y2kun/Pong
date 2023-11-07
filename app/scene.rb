@@ -26,19 +26,10 @@ class MainMenu
                 if args.inputs.mouse.click
                     case index
                     when 0
-                        #@ai1.delete self
-                        #@ai2.delete self
-                        #@ball.delete self
                         args.state.scene = Game.new(args)
                     when 1
-                        #@ai1.delete self
-                        #@ai2.delete self
-                        #@ball.delete self
                         args.gtk.notify! "This is not implimented yet"
                     when 2
-                        #@ai1.delete self
-                        #@ai2.delete self
-                        #@ball.delete self
                         args.state.scene = Options.new(args)
                     when 3
                         args.gtk.request_quit
@@ -55,11 +46,12 @@ class MainMenu
         @ai2.draw(args)
         @ball.draw(args)
 
-        args.outputs.labels << @tone.merge(x: args.grid.w * 0.1 , y: args.grid.h * 0.85, text: "Pong the Game"    , size_enum: 15, font: @font)
-        args.outputs.labels << @tone.merge(x: args.grid.w * 0.15 - @offset[0], y: args.grid.h * 0.75, text: "Begin a new Game" , size_enum: 5 + @offset[0], font: @font)
-        args.outputs.labels << @tone.merge(x: args.grid.w * 0.15 - @offset[1], y: args.grid.h * 0.7 , text: "Continue the Game", size_enum: 5 + @offset[1], font: @font)
-        args.outputs.labels << @tone.merge(x: args.grid.w * 0.15 - @offset[2], y: args.grid.h * 0.65, text: "Options"          , size_enum: 5 + @offset[2], font: @font)
-        args.outputs.labels << @tone.merge(x: args.grid.w * 0.15 - @offset[3], y: args.grid.h * 0.6 , text: "Quit Game"        , size_enum: 5 + @offset[3], font: @font)
+        args.outputs.labels << @tone.merge(x: args.grid.w * 0.1, y: args.grid.h * 0.85, text: "Pong", size_enum: 15, font: @font)
+        args.outputs.labels << @tone.merge(x: args.grid.w * 0.15 - @offset[0], y: args.grid.h * 0.75, text: "New Game"     , size_enum: 5 + @offset[0], font: @font)
+        args.outputs.labels << @tone.merge(x: args.grid.w * 0.15 - @offset[1], y: args.grid.h * 0.7 , text: "Continue Game", size_enum: 5 + @offset[1], font: @font)
+        args.outputs.labels << @tone.merge(x: args.grid.w * 0.15 - @offset[2], y: args.grid.h * 0.65, text: "Options"      , size_enum: 5 + @offset[2], font: @font)
+        args.outputs.labels << @tone.merge(x: args.grid.w * 0.15 - @offset[3], y: args.grid.h * 0.6 , text: "Quit Game"    , size_enum: 5 + @offset[3], font: @font)
+        args.outputs.labels << @tone.merge(x: args.grid.w - 100, y: 50, text: "by Y2kun", font: @font)
     end
 end
 
@@ -107,11 +99,11 @@ class Options
             if args.inputs.mouse.intersect_rect?(button) && args.inputs.mouse.click
                 case index
                 when 0 
-                    args.state.fullscreen      = !args.state.fullscreen
+                    args.state.fullscreen = !args.state.fullscreen
                 when 1
-                    args.state.sound           = !args.state.sound
+                    args.state.sound      = !args.state.sound
                 when 2
-                    args.state.two_player_mode = !args.state.two_player_mode
+                    args.state.two_p_mode = !args.state.two_p_mode
                 when 3
                     args.gtk.notify! "This is not implimented yet"
                 when 4
@@ -132,17 +124,22 @@ class Options
         args.outputs.labels << @tone.merge(x: args.grid.w * 0.3 - @offset[0], y: args.grid.h * 0.75, text: "Fullscreen"    , size_enum: 5  + @offset[0], font: @font)
         args.outputs.labels << @tone.merge(x: args.grid.w * 0.3 - @offset[1], y: args.grid.h * 0.65, text: "Sound"         , size_enum: 5  + @offset[1], font: @font)
         args.outputs.labels << @tone.merge(x: args.grid.w * 0.3 - @offset[2], y: args.grid.h * 0.55, text: "2 Player"      , size_enum: 5  + @offset[2], font: @font)
-        args.outputs.labels << @tone.merge(x: args.grid.w * 0.3 - @offset[3], y: args.grid.h * 0.45, text: "Score Required", size_enum: 5  + @offset[3], font: @font)
+        args.outputs.labels << @tone.merge(x: args.grid.w * 0.3 - @offset[3], y: args.grid.h * 0.45, text: "Required Score", size_enum: 5  + @offset[3], font: @font)
         args.outputs.labels << @tone.merge(x: args.grid.w * 0.3 - @offset[4], y: args.grid.h * 0.35, text: "Player Speeds" , size_enum: 5  + @offset[4], font: @font)
         args.outputs.labels << @tone.merge(x: args.grid.w * 0.3 - @offset[5], y: args.grid.h * 0.25, text: "Ai Speeds"     , size_enum: 5  + @offset[5], font: @font)
         #Buttons
         @buttons.each_with_index do |button, index|
             args.outputs.borders << @tone.merge(button)
-            args.outputs.solids  << @tone.merge({x: args.grid.w * 0.25 + 15 * 0.5, y: args.grid.h * 0.75 - 40 + 15 * 0.5, w: 35, h: 35}) if index == 0 && args.state.fullscreen      == true
-            args.outputs.solids  << @tone.merge({x: args.grid.w * 0.25 + 15 * 0.5, y: args.grid.h * 0.65 - 40 + 15 * 0.5, w: 35, h: 35}) if index == 1 && args.state.sound           == true
-            args.outputs.solids  << @tone.merge({x: args.grid.w * 0.25 + 15 * 0.5, y: args.grid.h * 0.55 - 40 + 15 * 0.5, w: 35, h: 35}) if index == 2 && args.state.two_player_mode == true
+            case index
+            when 0
+                args.outputs.solids  << @tone.merge({x: args.grid.w * 0.25 + 7.5, y: args.grid.h * 0.75 - 33, w: 35, h: 35}) if args.state.fullscreen
+            when 1
+                args.outputs.solids  << @tone.merge({x: args.grid.w * 0.25 + 7.5, y: args.grid.h * 0.65 - 33, w: 35, h: 35}) if args.state.sound
+            when 2
+                args.outputs.solids  << @tone.merge({x: args.grid.w * 0.25 + 7.5, y: args.grid.h * 0.55 - 33, w: 35, h: 35}) if args.state.two_p_mode
+            end
         end
-        args.outputs.labels << {x: 50, y: 50, text: "Esc to return to Main Menu", r: 255, g: 255, b: 255, font: "data/fonts/TimeburnerBold.ttf"}
+        args.outputs.labels << @tone.merge(x: 50, y: 50, text: "Esc to return to Main Menu", font: @font)
     end
 end
 
@@ -150,7 +147,7 @@ class Game
     attr_accessor :left, :right, :ball
     def initialize(args)
         @left = Player1.new(args)
-        if args.state.two_player_mode
+        if args.state.two_p_mode
             @right = Player2.new(args)
         else
             @right = Ai2.new(args)
