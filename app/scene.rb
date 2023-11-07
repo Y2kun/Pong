@@ -3,7 +3,7 @@ class MainMenu
     def initialize(args)
         @ai1 = args.state.ai1 = Ai1.new(args)
         @ai2 = args.state.ai2 = Ai2.new(args)
-        @ball = args.state.ball = Ball.new(args, [V[5, 5], V[-5, -5], V[5, -5], V[-5, 5]].sample)
+        @ball = args.state.ball = Ball.new(args, [V[0, 2], V[0, -2]].sample)
         @offset = [0] * 4
         @tone = {r: 255, g: 255, b: 255}
         @font = "data/fonts/TimeburnerBold.ttf"
@@ -23,11 +23,18 @@ class MainMenu
             #args.outputs.borders << @tone.merge(button) #for seeing the interactible area
             if args.inputs.mouse.intersect_rect?(button)
                 @offset[index] = 5
-                args.state.scene = Game.new(args) if index == 0 && args.inputs.mouse.click
-                args.gtk.notify! "This is not implimented yet" if index == 1 && args.inputs.mouse.click
-                args.state.scene = Options.new(args) if index == 2 && args.inputs.mouse.click
-                #args.gtk.notify! "This is not implimented yet" if index == 2 && args.inputs.mouse.click
-                args.gtk.request_quit if index == 3 && args.inputs.mouse.click
+                if args.inputs.mouse.click
+                    case index
+                    when 0
+                        args.state.scene = Game.new(args)
+                    when 1
+                        args.gtk.notify! "This is not implimented yet"
+                    when 2
+                        args.state.scene = Options.new(args)
+                    when 3
+                        args.gtk.request_quit
+                    end
+                end
             else
                 @offset[index] = 0
             end
@@ -88,13 +95,21 @@ class Options
         end
 
         @buttons.each_with_index do |button, index|
-            if args.inputs.mouse.intersect_rect?(button)
-                args.state.fullscreen      = !args.state.fullscreen      if index == 0 && args.inputs.mouse.click
-                args.state.sound           = !args.state.sound           if index == 1 && args.inputs.mouse.click
-                args.state.two_player_mode = !args.state.two_player_mode if index == 2 && args.inputs.mouse.click
-                args.gtk.notify! "This is not implimented yet" if index == 3 && args.inputs.mouse.click
-                args.gtk.notify! "This is not implimented yet" if index == 4 && args.inputs.mouse.click
-                args.gtk.notify! "This is not implimented yet" if index == 5 && args.inputs.mouse.click
+            if args.inputs.mouse.intersect_rect?(button) && args.inputs.mouse.click
+                case index
+                when 0 
+                    args.state.fullscreen      = !args.state.fullscreen
+                when 1
+                    args.state.sound           = !args.state.sound
+                when 2
+                    args.state.two_player_mode = !args.state.two_player_mode
+                when 3
+                    args.gtk.notify! "This is not implimented yet"
+                when 4
+                    args.gtk.notify! "This is not implimented yet"
+                when 5
+                    args.gtk.notify! "This is not implimented yet"
+                end
             end
         end
     end

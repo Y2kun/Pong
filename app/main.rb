@@ -115,7 +115,7 @@ class Ai1 < Paddle
     end
 
     def update(args)
-        target = V[0, args.state.ball.pos.y - heigth / 2]
+        target = V[0, args.state.ball.pos.y - heigth * 0.5]
         @velocity = (target - V[0, @pos.y]).normalize
         super(args)
     end
@@ -133,7 +133,7 @@ class Ai2 < Paddle
     end
 
     def update(args)
-        target = V[0, args.state.ball.pos.y - heigth / 2]
+        target = V[0, args.state.ball.pos.y - heigth * 0.5]
         @velocity = (target - V[0, @pos.y]).normalize
         super(args)
     end
