@@ -1,9 +1,9 @@
 class MainMenu
     attr_accessor :ai1, :ai2, :ball
     def initialize(args)
-        @ai1 = args.state.ai1 = Ai1.new(args)
-        @ai2 = args.state.ai2 = Ai2.new(args)
-        @ball = args.state.ball = Ball.new(args, [V[0, 2], V[0, -2]].sample)
+        @ai1 = Ai1.new(args)
+        @ai2 = Ai2.new(args)
+        @ball = args.state.ball = Ball.new(args, @ai1, @ai2, [V[0, 2], V[0, -2]].sample)
         @offset = [0] * 4
         @tone = {r: 255, g: 255, b: 255}
         @font = "data/fonts/TimeburnerBold.ttf"
@@ -26,10 +26,19 @@ class MainMenu
                 if args.inputs.mouse.click
                     case index
                     when 0
+                        #@ai1.delete self
+                        #@ai2.delete self
+                        #@ball.delete self
                         args.state.scene = Game.new(args)
                     when 1
+                        #@ai1.delete self
+                        #@ai2.delete self
+                        #@ball.delete self
                         args.gtk.notify! "This is not implimented yet"
                     when 2
+                        #@ai1.delete self
+                        #@ai2.delete self
+                        #@ball.delete self
                         args.state.scene = Options.new(args)
                     when 3
                         args.gtk.request_quit
@@ -57,9 +66,9 @@ end
 class Options
     attr_accessor :ai1, :ai2, :ball
     def initialize(args)
-        @ai1 = args.state.ai1 = Ai1.new(args)
-        @ai2 = args.state.ai2 = Ai2.new(args)
-        @ball = args.state.ball = Ball.new(args, [V[5, 5], V[-5, -5], V[5, -5], V[-5, 5]].sample)
+        @ai1 = Ai1.new(args)
+        @ai2 = Ai2.new(args)
+        @ball = args.state.ball = Ball.new(args, @ai1, @ai2, [V[0, 2], V[0, -2]].sample)
         @offset = [0] * 6
         @tone = {r: 255, g: 255, b: 255}
         @font = "data/fonts/TimeburnerBold.ttf"
@@ -138,17 +147,15 @@ class Options
 end
 
 class Game
-    attr_accessor :player1, :player2, :ball, :ai2
+    attr_accessor :left, :right, :ball
     def initialize(args)
-        @player1 = args.state.player1 = Player1.new(args)
+        @left = Player1.new(args)
         if args.state.two_player_mode
-            @player2 = args.state.player2 = Player2.new(args)
-            @ai2 = args.state.ai2 = nil
+            @right = Player2.new(args)
         else
-            @ai2 = args.state.ai2 = Ai2.new(args)
-            @player2 = args.state.player2 = nil
+            @right = Ai2.new(args)
         end
-        @ball = args.state.ball = Ball.new(args, V[0, 0])
+        @ball = args.state.ball = Ball.new(args, @left, @right, V[0, 0])
     end
 
     def update(args)
@@ -156,31 +163,22 @@ class Game
             args.state.scene = Win.new(args, winning_player)
             return
         end
-        @player1.update(args)
-        if @player2
-            @player2.update(args)
-        else
-            @ai2.update(args)
-        end
+        @left.update(args)
+        @right.update(args)
         @ball.update(args) if !args.state.paused
     end
 
     def draw(args)
-        @player1.draw(args)
-        args.outputs.labels << {x: args.grid.w * 0.4, y: args.grid.h - 30, text: "p1 #{@player1.score}", size_enum: 2, r: 255, g: 255, b: 255}
-        if @player2
-            @player2.draw(args)
-            args.outputs.labels << {x: args.grid.w * 0.6, y: args.grid.h - 30, text: "p2 #{@player2.score}", size_enum: 2, r: 255, g: 255, b: 255}
-        else
-            @ai2.draw(args)
-            args.outputs.labels << {x: args.grid.w * 0.6, y: args.grid.h - 30, text: "e  #{@ai2.score}", size_enum: 2, r: 255, g: 255, b: 255}
-        end
+        @left.draw(args)
+        args.outputs.labels << {x: args.grid.w * 0.4, y: args.grid.h - 30, text: "#{@left}: #{@left.score}", size_enum: 2, r: 255, g: 255, b: 255}
+        @right.draw(args)
+        args.outputs.labels << {x: args.grid.w * 0.6, y: args.grid.h - 30, text: "#{@right}: #{@right.score}", size_enum: 2, r: 255, g: 255, b: 255}
         @ball.draw(args)
         args.outputs.labels << {x: 50, y: 50, text: "Esc to return to Main Menu", r: 255, g: 255, b: 255, font: "data/fonts/TimeburnerBold.ttf"}
     end
 
     def winner(args)
-        [player1, player2, ai2].compact.find{|e| e.score >= args.state.win_threshhold }
+        [@left, @right].compact.find{|e| e.score >= args.state.win_threshhold }
     end
 end
 

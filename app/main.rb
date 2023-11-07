@@ -4,7 +4,6 @@ require "app/scene.rb"
 #                           Possible Changes
 #Timer before the next round
 #dark and light mode
-#only ai playing #possibly the background for the main menu and options
 #better paddle scripts
 #Ingame Config
 
@@ -22,7 +21,7 @@ def initialize(args)
     args.state.sound             = true
     args.state.two_player_mode   = false
     args.state.p1_and_p2_speed   = 4
-    args.state.ai1_and_ai2_speed = 5
+    args.state.ai1_and_ai2_speed = 8
     args.state.win_threshhold    = 10 #How many Points are required for Victory
     #saves
     args.state.scene             = MainMenu.new(args)#MainMenu.new(args)
@@ -144,11 +143,13 @@ class Ai2 < Paddle
 end
 
 class Ball
-    attr_accessor :width, :heigth, :tone, :pos, :velocity, :speed
-    def initialize(args, init_diagonal)
+    attr_accessor :width, :heigth, :left, :right, :tone, :pos, :velocity, :speed
+    def initialize(args, left, right, init_diagonal)
         @width = 25
         @heigth = 25
         @tone = 200
+        @left = left
+        @right = right
         @pos = V[args.grid.w * 0.5 - @width * 0.5, args.grid.h * 0.5 - @heigth * 0.5]
         @velocity = V[[10, -10].sample, 0] + init_diagonal
         @speed = 2
@@ -179,52 +180,34 @@ class Ball
         end
 
         #Paddels
-        if args.state.player1.hitbox && hitbox.intersect_rect?(args.state.player1.hitbox)
-            @velocity = V[-@velocity.x, args.state.player1.velocity.y]
+        if @left.hitbox && hitbox.intersect_rect?(@left.hitbox)
+            @velocity = V[-@velocity.x, @left.velocity.y]
             hit(args)
-        elsif args.state.player2.hitbox && hitbox.intersect_rect?(args.state.player2.hitbox)
-            @velocity = V[-@velocity.x, args.state.player2.velocity.y]
-            hit(args)
-        elsif args.state.ai1.hitbox && hitbox.intersect_rect?(args.state.ai1.hitbox)
-            @velocity = V[-@velocity.x, args.state.ai2.velocity.y * 2]
-            hit(args)
-        elsif args.state.ai2.hitbox && hitbox.intersect_rect?(args.state.ai2.hitbox)
-            @velocity = V[-@velocity.x, args.state.ai2.velocity.y * 2]
+        elsif @right.hitbox && hitbox.intersect_rect?(@right.hitbox)
+            @velocity = V[-@velocity.x, @right.velocity.y]
             hit(args)
         end
 
         #Goal
         if @pos.x < 0
-            args.state.player2.score += 1 if args.state.player2.score
-            args.state.ai2.score += 1 if args.state.ai2.score
+            @right.score += 1
             reset(args)
         elsif @pos.x > args.grid.w - @width
-            args.state.player1.score += 1 if args.state.player1.score
-            args.state.ai1.score += 1 if args.state.ai1.score
+            @left.score += 1
             reset(args)
         end
     end
 
     def reset(args)
         #left
-        if args.state.player1.pos
-            args.state.player1.pos = V[0, args.grid.h * 0.5 - args.state.player1.heigth * 0.5]
-            args.state.player1.velocity = V[0, 0]
-        elsif args.state.ai1.pos
-            args.state.ai1.pos = V[0, args.grid.h * 0.5 - args.state.ai1.heigth * 0.5]
-            args.state.ai1.velocity = V[0, 0]
-        end
+        @left.pos = V[0, args.grid.h * 0.5 - @left.heigth * 0.5]
+        @left.velocity = V[0, 0]
         #right
-        if args.state.player2.pos
-            args.state.player2.pos = V[args.grid.w - args.state.player2.width, args.grid.h * 0.5 - args.state.player2.heigth * 0.5]
-            args.state.player2.velocity = V[0, 0]
-        elsif args.state.ai2.pos
-            args.state.ai2.pos = V[args.grid.w - args.state.ai2.width, args.grid.h * 0.5 - args.state.ai2.heigth * 0.5]
-            args.state.ai2.velocity = V[0, 0]
-        end
+        @right.pos = V[args.grid.w - @right.width, args.grid.h * 0.5 - @right.heigth * 0.5]
+        @right.velocity = V[0, 0]
 
         #self
-        @pos = V[args.grid.w * 0.5 - width * 0.5, args.grid.h * 0.5 - heigth * 0.5]
+        @pos = V[args.grid.w * 0.5 - @width * 0.5, args.grid.h * 0.5 - @heigth * 0.5]
         @velocity = V[[10, -10].sample, 0]
         args.state.paused = true
     end
