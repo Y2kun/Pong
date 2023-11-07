@@ -68,7 +68,7 @@ class Options
         @ai1.update(args)
         @ai2.update(args)
         @ball.update(args)
-        
+
         higlight_box = [{x: args.grid.w * 0.3 - @offset[0] - 50, y: args.grid.h * 0.75 - 35, w: 110 + @offset[0] * 8   + 50, h: 35},
                         {x: args.grid.w * 0.3 - @offset[1] - 50, y: args.grid.h * 0.65 - 29, w: 70  + @offset[1] * 5   + 50, h: 30},
                         {x: args.grid.w * 0.3 - @offset[2] - 50, y: args.grid.h * 0.55 - 35, w: 88  + @offset[2] * 5.5 + 50, h: 35},
@@ -126,8 +126,13 @@ class Game
     attr_accessor :player1, :player2, :ball, :ai2
     def initialize(args)
         @player1 = args.state.player1 = Player1.new(args)
-        @player2 = args.state.player2 = Player2.new(args)
-        @ai2 = args.state.ai2 = Ai2.new(args)
+        if args.state.two_player_mode
+            @player2 = args.state.player2 = Player2.new(args)
+            @ai2 = args.state.ai2 = nil
+        else
+            @ai2 = args.state.ai2 = Ai2.new(args)
+            @player2 = args.state.player2 = nil
+        end
         @ball = args.state.ball = Ball.new(args, V[0, 0])
     end
 
@@ -137,7 +142,7 @@ class Game
             return
         end
         @player1.update(args)
-        if args.state.two_player_mode
+        if @player2
             @player2.update(args)
         else
             @ai2.update(args)
