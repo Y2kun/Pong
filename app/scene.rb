@@ -5,8 +5,7 @@ class MainMenu
         @ai2 = Ai2.new(args)
         @ball = args.state.ball = Ball.new(args, @ai1, @ai2, [V[0, 5], V[0, -5]].sample)
         @offset = [0] * 4
-        @tone = {r: 255, g: 255, b: 255}
-        @font = "data/fonts/TimeburnerBold.ttf"
+        @tone = args.state.tone[args.state.theme][1]
     end
 
     def update(args)
@@ -46,24 +45,23 @@ class MainMenu
         @ai2.draw(args)
         @ball.draw(args)
 
-        args.outputs.labels << @tone.merge(x: args.grid.w * 0.1, y: args.grid.h * 0.85, text: "Pong", size_enum: 15, font: @font)
-        args.outputs.labels << @tone.merge(x: args.grid.w * 0.15 - @offset[0], y: args.grid.h * 0.75, text: "New Game"     , size_enum: 5 + @offset[0], font: @font)
-        args.outputs.labels << @tone.merge(x: args.grid.w * 0.15 - @offset[1], y: args.grid.h * 0.7 , text: "Continue Game", size_enum: 5 + @offset[1], font: @font)
-        args.outputs.labels << @tone.merge(x: args.grid.w * 0.15 - @offset[2], y: args.grid.h * 0.65, text: "Options"      , size_enum: 5 + @offset[2], font: @font)
-        args.outputs.labels << @tone.merge(x: args.grid.w * 0.15 - @offset[3], y: args.grid.h * 0.6 , text: "Quit Game"    , size_enum: 5 + @offset[3], font: @font)
-        args.outputs.labels << @tone.merge(x: args.grid.w - 100, y: 50, text: "by Y2kun", font: @font)
+        args.outputs.labels << @tone.merge(x: args.grid.w * 0.1, y: args.grid.h * 0.85, text: "Pong", size_enum: 15, font: FONT)
+        args.outputs.labels << @tone.merge(x: args.grid.w * 0.15 - @offset[0], y: args.grid.h * 0.75, text: "New Game"     , size_enum: 5 + @offset[0], font: FONT)
+        args.outputs.labels << @tone.merge(x: args.grid.w * 0.15 - @offset[1], y: args.grid.h * 0.7 , text: "Continue Game", size_enum: 5 + @offset[1], font: FONT)
+        args.outputs.labels << @tone.merge(x: args.grid.w * 0.15 - @offset[2], y: args.grid.h * 0.65, text: "Options"      , size_enum: 5 + @offset[2], font: FONT)
+        args.outputs.labels << @tone.merge(x: args.grid.w * 0.15 - @offset[3], y: args.grid.h * 0.6 , text: "Quit Game"    , size_enum: 5 + @offset[3], font: FONT)
+        args.outputs.labels << @tone.merge(x: args.grid.w - 100, y: 50, text: "by Y2kun", font: FONT)
     end
 end
 
 class Options
-    attr_accessor :ai1, :ai2, :ball
+    attr_accessor :ai1, :ai2, :ball, :tone
     def initialize(args)
         @ai1 = Ai1.new(args)
         @ai2 = Ai2.new(args)
         @ball = args.state.ball = Ball.new(args, @ai1, @ai2, [V[0, 5], V[0, -5]].sample)
         @offset = [0] * 6
-        @tone = {r: 255, g: 255, b: 255}
-        @font = "data/fonts/TimeburnerBold.ttf"
+        @tone = args.state.tone[args.state.theme][1]
         @buttons = [{x: args.grid.w * 0.25, y: args.grid.h * 0.75 - 40, w: 50, h: 50},
                     {x: args.grid.w * 0.25, y: args.grid.h * 0.65 - 40, w: 50, h: 50},
                     {x: args.grid.w * 0.25, y: args.grid.h * 0.55 - 40, w: 50, h: 50},
@@ -120,13 +118,13 @@ class Options
         @ai2.draw(args)
         @ball.draw(args)
         #Text
-        args.outputs.labels << @tone.merge(x: args.grid.w * 0.45            , y: args.grid.h * 0.9 , text: "Options"       , size_enum: 15             , font: @font)
-        args.outputs.labels << @tone.merge(x: args.grid.w * 0.3 - @offset[0], y: args.grid.h * 0.75, text: "Fullscreen"    , size_enum: 5  + @offset[0], font: @font)
-        args.outputs.labels << @tone.merge(x: args.grid.w * 0.3 - @offset[1], y: args.grid.h * 0.65, text: "Sound"         , size_enum: 5  + @offset[1], font: @font)
-        args.outputs.labels << @tone.merge(x: args.grid.w * 0.3 - @offset[2], y: args.grid.h * 0.55, text: "2 Player"      , size_enum: 5  + @offset[2], font: @font)
-        args.outputs.labels << @tone.merge(x: args.grid.w * 0.3 - @offset[3], y: args.grid.h * 0.45, text: "Required Score", size_enum: 5  + @offset[3], font: @font)
-        args.outputs.labels << @tone.merge(x: args.grid.w * 0.3 - @offset[4], y: args.grid.h * 0.35, text: "Player Speeds" , size_enum: 5  + @offset[4], font: @font)
-        args.outputs.labels << @tone.merge(x: args.grid.w * 0.3 - @offset[5], y: args.grid.h * 0.25, text: "Ai Speeds"     , size_enum: 5  + @offset[5], font: @font)
+        args.outputs.labels << @tone.merge(x: args.grid.w * 0.45            , y: args.grid.h * 0.9 , text: "Options"       , size_enum: 15             , font: FONT)
+        args.outputs.labels << @tone.merge(x: args.grid.w * 0.3 - @offset[0], y: args.grid.h * 0.75, text: "Fullscreen"    , size_enum: 5  + @offset[0], font: FONT)
+        args.outputs.labels << @tone.merge(x: args.grid.w * 0.3 - @offset[1], y: args.grid.h * 0.65, text: "Sound"         , size_enum: 5  + @offset[1], font: FONT)
+        args.outputs.labels << @tone.merge(x: args.grid.w * 0.3 - @offset[2], y: args.grid.h * 0.55, text: "2 Player"      , size_enum: 5  + @offset[2], font: FONT)
+        args.outputs.labels << @tone.merge(x: args.grid.w * 0.3 - @offset[3], y: args.grid.h * 0.45, text: "Required Score", size_enum: 5  + @offset[3], font: FONT)
+        args.outputs.labels << @tone.merge(x: args.grid.w * 0.3 - @offset[4], y: args.grid.h * 0.35, text: "Player Speeds" , size_enum: 5  + @offset[4], font: FONT)
+        args.outputs.labels << @tone.merge(x: args.grid.w * 0.3 - @offset[5], y: args.grid.h * 0.25, text: "Ai Speeds"     , size_enum: 5  + @offset[5], font: FONT)
         #Buttons
         @buttons.each_with_index do |button, index|
             args.outputs.borders << @tone.merge(button)
@@ -139,12 +137,12 @@ class Options
                 args.outputs.solids  << @tone.merge({x: args.grid.w * 0.25 + 7.5, y: args.grid.h * 0.55 - 33, w: 35, h: 35}) if args.state.two_p_mode
             end
         end
-        args.outputs.labels << @tone.merge(x: 50, y: 50, text: "Esc to return to Main Menu", font: @font)
+        args.outputs.labels << @tone.merge(x: 50, y: 50, text: "Esc to return to Main Menu", font: FONT)
     end
 end
 
 class Game
-    attr_accessor :left, :right, :ball
+    attr_accessor :left, :right, :ball, :tone
     def initialize(args)
         @left = Player1.new(args)
         if args.state.two_p_mode
@@ -153,6 +151,7 @@ class Game
             @right = Ai2.new(args)
         end
         @ball = args.state.ball = Ball.new(args, @left, @right, V[0, 0])
+        @tone = args.state.tone[args.state.theme][1]
     end
 
     def update(args)
@@ -167,11 +166,11 @@ class Game
 
     def draw(args)
         @left.draw(args)
-        args.outputs.labels << {x: args.grid.w * 0.4, y: args.grid.h - 30, text: "#{@left}: #{@left.score}", size_enum: 2, r: 255, g: 255, b: 255}
+        args.outputs.labels << @tone.merge(x: args.grid.w * 0.4, y: args.grid.h - 30, text: "#{@left}: #{@left.score}", size_enum: 2)
         @right.draw(args)
-        args.outputs.labels << {x: args.grid.w * 0.6, y: args.grid.h - 30, text: "#{@right}: #{@right.score}", size_enum: 2, r: 255, g: 255, b: 255}
+        args.outputs.labels << @tone.merge(x: args.grid.w * 0.6, y: args.grid.h - 30, text: "#{@right}: #{@right.score}", size_enum: 2, r: 255, g: 255, b: 255)
         @ball.draw(args)
-        args.outputs.labels << {x: 50, y: 50, text: "Esc to return to Main Menu", r: 255, g: 255, b: 255, font: "data/fonts/TimeburnerBold.ttf"}
+        args.outputs.labels << @tone.merge(x: 50, y: 50, text: "Esc to return to Main Menu", r: 255, g: 255, b: 255, font: args.state.font)
     end
 
     def winner(args)
@@ -184,6 +183,8 @@ class Win
 
     def initialize(args, winning_player)
         @winning_player = winning_player
+        FONT = args.state.font
+        @tone = args.state.tone[args.state.theme][1]
     end
 
     def update(args)
@@ -191,10 +192,10 @@ class Win
     end
 
     def draw(args)
-        args.outputs.primitives << {primitive_marker: :solid, x: 0, y: 0, w: args.grid.w, h: args.grid.h, r: 0, b: 0, g: 0}
-        args.outputs.labels << {x: args.grid.w * 0.4 , y: args.grid.h * 0.5 + 55, text: text, size_enum: 4, r: 255, b: 255, g: 255}
-        args.outputs.labels << {x: 30, y: args.grid.h * 0.95, text: "Press Esc to return to Main Menu", r: 255, g: 255, b: 255, font: "data/fonts/TimeburnerBold.ttf"}
-        args.outputs.labels << {x: 30, y: args.grid.h * 0.9 , text: "Press R to Restart"              , r: 255, g: 255, b: 255, font: "data/fonts/TimeburnerBold.ttf"}
+        args.outputs.primitives << args.state.tone[args.state.theme][0].merge(primitive_marker: :solid, x: 0, y: 0, w: args.grid.w, h: args.grid.h)
+        args.outputs.labels << @tone.merge(x: args.grid.w * 0.4 , y: args.grid.h * 0.5 + 55, text: text, size_enum: 4, r: 255, b: 255, g: 255)
+        args.outputs.labels << @tone.merge(x: 30, y: args.grid.h * 0.95, text: "Press Esc to return to Main Menu", font: FONT)
+        args.outputs.labels << @tone.merge(x: 30, y: args.grid.h * 0.9 , text: "Press R to Restart"              , font: FONT)
     end
 
     def text
