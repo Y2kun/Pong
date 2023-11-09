@@ -152,6 +152,8 @@ class Game
         end
         @ball = args.state.ball = Ball.new(args, @left, @right, V[0, 0])
         @tone = args.state.tone[args.state.theme][1]
+        args.state.countdown = args.state.rounddelay
+        args.state.last_set_time = Time.now()
     end
 
     def update(args)
@@ -159,18 +161,24 @@ class Game
             args.state.scene = Win.new(args, winning_player)
             return
         end
-        @left.update(args)
-        @right.update(args)
-        @ball.update(args) if !args.state.paused
+
+        if args.state.last_set_time + args.state.countdown <= Time.new()
+            @left.update(args)
+            @right.update(args) #somehow make the ai not move if the game is not running
+            @ball.update(args) if args.state.running
+        end
     end
 
     def draw(args)
         @left.draw(args)
-        args.outputs.labels << @tone.merge(x: args.grid.w * 0.4, y: args.grid.h - 30, text: "#{@left}: #{@left.score}", size_enum: 2)
+        args.outputs.labels << @tone.merge(x: args.grid.w * 0.31, y: args.grid.h - 30, text: "#{@left}: #{@left.score}", size_enum: 2)
         @right.draw(args)
-        args.outputs.labels << @tone.merge(x: args.grid.w * 0.6, y: args.grid.h - 30, text: "#{@right}: #{@right.score}", size_enum: 2, r: 255, g: 255, b: 255)
+        args.outputs.labels << @tone.merge(x: args.grid.w * 0.61, y: args.grid.h - 30, text: "#{@right}: #{@right.score}", size_enum: 2)
         @ball.draw(args)
-        args.outputs.labels << @tone.merge(x: 50, y: 50, text: "Esc to return to Main Menu", r: 255, g: 255, b: 255, font: args.state.font)
+        args.outputs.labels << @tone.merge(x: 50, y: 50, text: "Esc to return to Main Menu", font: FONT)
+        unless args.state.last_set_time + args.state.countdown <= Time.new()
+            args.outputs.labels << @tone.merge(x: args.grid.w * 0.5 - 10, y: args.grid.h * 0.65, text: "#{(args.state.last_set_time + args.state.countdown - Time.new()).ceil()}", font: FONT, size_enum: 30)
+        end
     end
 
     def winner(args)

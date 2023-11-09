@@ -27,12 +27,14 @@ def initialize(args)
     args.state.ai1_and_ai2_speed = 1.2
     args.state.win_threshhold    = 10 #How many Points are required for Victory
     #saves
-    args.state.paused            = true
+    args.state.running           = true
+    args.state.countdown         = 0
+    args.state.rounddelay        = 3
     args.state.tone              = {}
     args.state.tone[:dark]       = [{r: 0, g: 0, b: 0}, {r: 255, g: 255, b: 255}]
     args.state.tone[:light]      = [{r: 255, g: 255, b: 255}, {r: 0, g: 0, b: 0}]
     args.state.scene             = MainMenu.new(args)
-    args.state.current_time      = Time.now()
+    args.state.last_set_time     = 0
 end
 
 def window(args)
@@ -80,10 +82,10 @@ class Player1 < Paddle
         key = args.inputs.keyboard.key_held
         if key.w
             @velocity += V[0, 1]
-            args.state.paused = false
+            args.state.running = true
         elsif key.s
             @velocity += V[0, -1]
-            args.state.paused = false
+            args.state.running = true
         end
         super(args)
     end
@@ -103,10 +105,10 @@ class Player2 < Paddle
         key = args.inputs.keyboard.key_held
         if key.up
             @velocity += V[0, 1]
-            args.state.paused = false
+            args.state.running = true
         elsif key.down
             @velocity += V[0, -1]
-            args.state.paused = false
+            args.state.running = true
         end
         super(args)
     end
@@ -172,6 +174,7 @@ class Ball
 
     def draw(args)
         args.outputs.solids << {x: pos.x, y: pos.y, w: @width, h: @heigth, r: @tone, g: @tone, b: @tone}
+        args.outputs.solids << {x: pos.x, y: pos.y, w: @width, h: @heigth, r: 55, g: 55, b: 55}
     end
 
     def hitbox
@@ -218,7 +221,9 @@ class Ball
         #self
         @pos = V[args.grid.w * 0.5 - @width * 0.5, args.grid.h * 0.5 - @heigth * 0.5]
         @velocity = V[[10, -10].sample, 0]
-        args.state.paused = true
+        args.state.running = false
+        args.state.countdown = args.state.rounddelay
+        args.state.last_set_time = Time.new()
     end
 
     def hit(args)
