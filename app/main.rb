@@ -2,10 +2,8 @@ require "app/v.rb"
 require "app/scene.rb"
 
 #     Possible Changes
-#Timer before the next round
-#dark and light mode
-#better paddle scripts
 #Ingame Config
+#control remamping or something
 
 FONT = "data/fonts/TimeburnerBold.ttf"
 
@@ -173,8 +171,11 @@ class Ball
     end
 
     def draw(args)
+        if args.state.theme == :dark
         args.outputs.solids << {x: pos.x, y: pos.y, w: @width, h: @heigth, r: @tone, g: @tone, b: @tone}
-        args.outputs.solids << {x: pos.x, y: pos.y, w: @width, h: @heigth, r: 55, g: 55, b: 55}
+            else
+            args.outputs.solids << {x: pos.x, y: pos.y, w: @width, h: @heigth, r: 55, g: 55, b: 55}
+        end
     end
 
     def hitbox
