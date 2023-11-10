@@ -14,7 +14,6 @@ THEME = {
     },
 }
 
-
 def tick args
     initialize(args) if args.state.tick_count == 0
     window(args)
