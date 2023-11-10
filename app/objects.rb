@@ -1,4 +1,15 @@
+module Themed
+    def primary(args)
+        THEME.fetch(args.state.theme).fetch(:primary)
+    end
+
+    def secondary(args)
+        THEME.fetch(args.state.theme).fetch(:secondary)
+    end
+end
+
 class Paddle
+    include Themed
     attr_accessor :width, :heigth, :pos, :velocity, :speed, :score
     def initialize(args)
         @width = 15
@@ -20,7 +31,7 @@ class Paddle
     end
 
     def draw(args)
-        args.outputs.solids << args.state.tone[args.state.theme][1].merge(x: @pos.x, y: @pos.y, w: @width, h: @heigth)
+        args.outputs.solids << primary(args).merge(x: @pos.x, y: @pos.y, w: @width, h: @heigth)
     end
 
     def hitbox
@@ -33,10 +44,8 @@ class Player1 < Paddle
         key = args.inputs.keyboard.key_held
         if key.w
             @velocity += V[0, 1]
-            args.state.running = true
         elsif key.s
             @velocity += V[0, -1]
-            args.state.running = true
         end
         super(args)
     end
@@ -56,10 +65,8 @@ class Player2 < Paddle
         key = args.inputs.keyboard.key_held
         if key.up
             @velocity += V[0, 1]
-            args.state.running = true
         elsif key.down
             @velocity += V[0, -1]
-            args.state.running = true
         end
         super(args)
     end
@@ -109,11 +116,10 @@ class Ball
     def initialize(args, left, right, init_diagonal)
         @width = 25
         @heigth = 25
-        @tone = 200
         @left = left
         @right = right
         @pos = V[args.grid.w * 0.5 - @width * 0.5, args.grid.h * 0.5 - @heigth * 0.5]
-        @velocity = V[[10, -10].sample, 0] + init_diagonal
+        @velocity = V[[5, -5].sample, 0] + init_diagonal
         @speed = 2
     end
 
@@ -125,7 +131,7 @@ class Ball
 
     def draw(args)
         if args.state.theme == :dark
-        args.outputs.solids << {x: pos.x, y: pos.y, w: @width, h: @heigth, r: @tone, g: @tone, b: @tone}
+        args.outputs.solids << {x: pos.x, y: pos.y, w: @width, h: @heigth, r: 200, g: 200, b: 200}
             else
             args.outputs.solids << {x: pos.x, y: pos.y, w: @width, h: @heigth, r: 55, g: 55, b: 55}
         end
@@ -174,8 +180,7 @@ class Ball
 
         #self
         @pos = V[args.grid.w * 0.5 - @width * 0.5, args.grid.h * 0.5 - @heigth * 0.5]
-        @velocity = V[[10, -10].sample, 0]
-        args.state.running = false
+        @velocity = V[[5, -5].sample, 0]
         args.state.countdown = args.state.rounddelay
         args.state.last_set_time = Time.new()
     end
