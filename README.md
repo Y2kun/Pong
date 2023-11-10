@@ -1,5 +1,6 @@
 # Pong
-This is the Code for Pong writen in Ruby, running on Dragonruby
+This is the Source Code for Pong in Ruby.
+Engine: Dragonruby
 
 ## Instructions for the Game Itself
 
