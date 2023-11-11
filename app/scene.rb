@@ -4,7 +4,7 @@ class MainMenu
     def initialize(args)
         @ai1 = Ai1.new(args)
         @ai2 = Ai2.new(args)
-        @ball = args.state.ball = Ball.new(args, @ai1, @ai2, [V[0, 3], V[0, -3]].sample)
+        @ball = args.state.ball = Ball.new(args, @ai1, @ai2)
         @offset = [0] * 4
     end
 
@@ -27,7 +27,7 @@ class MainMenu
                     when 0
                         args.state.scene = Game.new(args)
                     when 1
-                        args.gtk.notify! "This is not implimented yet"
+                        puts "Error: Action not available"
                     when 2
                         args.state.scene = Options.new(args)
                     when 3
@@ -60,7 +60,7 @@ class Options
     def initialize(args)
         @ai1 = Ai1.new(args)
         @ai2 = Ai2.new(args)
-        @ball = args.state.ball = Ball.new(args, @ai1, @ai2, [V[0, 3], V[0, -3]].sample)
+        @ball = args.state.ball = Ball.new(args, @ai1, @ai2)
         @offset = [0] * 6
         @buttons = [{x: args.grid.w * 0.25, y: args.grid.h * 0.75 - 40, w: 50, h: 50},
                     {x: args.grid.w * 0.25, y: args.grid.h * 0.65 - 40, w: 50, h: 50},
@@ -103,11 +103,11 @@ class Options
                 when 2
                     args.state.two_p_mode = !args.state.two_p_mode
                 when 3
-                    args.gtk.notify! "This is not implimented yet"
+                    puts "Error: Action not available"
                 when 4
-                    args.gtk.notify! "This is not implimented yet"
+                    puts "Error: Action not available"
                 when 5
-                    args.gtk.notify! "This is not implimented yet"
+                    puts "Error: Action not available"
                 end
             end
         end
@@ -151,7 +151,7 @@ class Game
         else
             @right = Ai2.new(args)
         end
-        @ball = args.state.ball = Ball.new(args, @left, @right, [V[0, 1], V[0, -1]].sample)
+        @ball = args.state.ball = Ball.new(args, @left, @right)
         args.state.countdown = args.state.rounddelay
         args.state.last_set_time = Time.now()
     end

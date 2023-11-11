@@ -58,7 +58,7 @@ end
 class Player2 < Paddle
     def initialize(args)
         super
-        @pos = V[args.grid.w - width, args.grid.h * 0.5 - heigth * 0.5]
+        @pos = V[args.grid.w - @width, args.grid.h * 0.5 - @heigth * 0.5]
     end
 
     def update(args)
@@ -80,11 +80,24 @@ class Ai1 < Paddle
     def initialize(args)
         super
         @speed = args.state.ai1_and_ai2_speed
+        @tolerance = 20
     end
 
     def update(args)
-        target = V[0, args.state.ball.pos.y - heigth * 0.5]
-        @velocity += (target - V[0, @pos.y]).normalize
+        ball = args.state.ball
+        y_center = @pos.y + heigth * 0.5
+        y_ball_center = ball.pos.y + ball.heigth * 0.5
+        target = V[0, y_ball_center]
+        args.outputs.primitives << {primitive_marker: :solid ,x: @pos.x, y: target.y, w: @width, h: 5, r: 75, g: 75, b: 75} if DEBUG
+        unless y_center >= y_ball_center - @tolerance && y_center <= y_ball_center + @tolerance
+            @velocity += (target - V[0, y_center]).normalize
+        end
+        super(args)
+    end
+
+    def draw(args)
+        y_center = @pos.y + heigth * 0.5
+        args.outputs.primitives << {primitive_marker: :solid ,x: @pos.x, y: y_center - @tolerance, w: @width, h: @tolerance * 2, r: 50, g: 50, b: 50} if DEBUG
         super(args)
     end
 
@@ -98,11 +111,24 @@ class Ai2 < Paddle
         super
         @pos = V[args.grid.w - width, args.grid.h * 0.5 - heigth * 0.5]
         @speed = args.state.ai1_and_ai2_speed
+        @tolerance = 20
     end
 
     def update(args)
-        target = V[0, args.state.ball.pos.y - heigth * 0.5]
-        @velocity += (target - V[0, @pos.y]).normalize
+        ball = args.state.ball
+        y_center = @pos.y + heigth * 0.5
+        y_ball_center = ball.pos.y + ball.heigth * 0.5
+        target = V[0, y_ball_center]
+        args.outputs.primitives << {primitive_marker: :solid ,x: @pos.x, y: target.y, w: @width, h: 5, r: 75, g: 75, b: 75} if DEBUG
+        unless y_center >= y_ball_center - @tolerance && y_center <= y_ball_center + @tolerance
+            @velocity += (target - V[0, y_center]).normalize
+        end
+        super(args)
+    end
+
+    def draw(args)
+        y_center = @pos.y + heigth * 0.5
+        args.outputs.primitives << {primitive_marker: :solid ,x: @pos.x, y: y_center - @tolerance, w: @width, h: @tolerance * 2, r: 50, g: 50, b: 50} if DEBUG
         super(args)
     end
 
@@ -113,13 +139,13 @@ end
 
 class Ball
     attr_accessor :width, :heigth, :left, :right, :tone, :pos, :velocity, :speed
-    def initialize(args, left, right, init_diagonal)
+    def initialize(args, left, right)
         @width = 25
         @heigth = 25
         @left = left
         @right = right
         @pos = V[args.grid.w * 0.5 - @width * 0.5, args.grid.h * 0.5 - @heigth * 0.5]
-        @velocity = V[[5, -5].sample, 0] + init_diagonal
+        @velocity = V[[5, -5].sample, [1, -1].sample]
         @speed = 2
     end
 
@@ -131,8 +157,8 @@ class Ball
 
     def draw(args)
         if args.state.theme == :dark
-        args.outputs.solids << {x: pos.x, y: pos.y, w: @width, h: @heigth, r: 200, g: 200, b: 200}
-            else
+            args.outputs.solids << {x: pos.x, y: pos.y, w: @width, h: @heigth, r: 200, g: 200, b: 200}
+        else
             args.outputs.solids << {x: pos.x, y: pos.y, w: @width, h: @heigth, r: 55, g: 55, b: 55}
         end
     end
@@ -180,7 +206,7 @@ class Ball
 
         #self
         @pos = V[args.grid.w * 0.5 - @width * 0.5, args.grid.h * 0.5 - @heigth * 0.5]
-        @velocity = V[[5, -5].sample, 0]
+        @velocity = V[[5, -5].sample, [1, -1].sample]
         args.state.countdown = args.state.rounddelay
         args.state.last_set_time = Time.new()
     end
