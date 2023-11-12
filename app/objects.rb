@@ -35,7 +35,7 @@ class Paddle
     end
 
     def hitbox
-        {x: pos.x, y: pos.y, w: width, h: heigth}
+        {x: @pos.x, y: @pos.y, w: @width, h: @heigth}
     end
 end
 
@@ -164,7 +164,7 @@ class Ball
     end
 
     def hitbox
-        {x: pos.x, y: pos.y, w: width, h: heigth}
+        {x: @pos.x, y: @pos.y, w: @width, h: @heigth}
     end
 
     def collision(args)
