@@ -157,9 +157,9 @@ class Ball
 
     def draw(args)
         if args.state.theme == :dark
-            args.outputs.solids << {x: pos.x, y: pos.y, w: @width, h: @heigth, r: 200, g: 200, b: 200}
+            args.outputs.solids << {x: @pos.x, y: @pos.y, w: @width, h: @heigth, r: 200, g: 200, b: 200}
         else
-            args.outputs.solids << {x: pos.x, y: pos.y, w: @width, h: @heigth, r: 55, g: 55, b: 55}
+            args.outputs.solids << {x: @pos.x, y: @pos.y, w: @width, h: @heigth, r: 55, g: 55, b: 55}
         end
     end
 
@@ -170,10 +170,10 @@ class Ball
     def collision(args)
         #Walls
         if pos.y < 0
-            @velocity = V[@velocity.x, -@velocity.y]
+            @velocity = V[@velocity.x, @velocity.y.abs()]
             hit(args)
         elsif pos.y > args.grid.h - @heigth
-            @velocity = V[@velocity.x, -@velocity.y]
+            @velocity = V[@velocity.x, -(@velocity.y.abs())]
             hit(args)
         end
 
