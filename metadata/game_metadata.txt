@@ -1,0 +1,6 @@
+devid=y2kun
+devtitle=Y2kun
+gameid=pong
+gametitle=Pong
+version=0.75
+icon=metadata/favicon.png
