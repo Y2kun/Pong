@@ -32,6 +32,8 @@ class MainMenu
                         args.state.scene = Options.new(args)
                     when 3
                         args.gtk.request_quit
+                    else
+                        puts "Error: Button Nr.#{index} does not exist"
                     end
                 end
             else
@@ -108,6 +110,8 @@ class Options
                     puts "Error: Action not available"
                 when 5
                     puts "Error: Action not available"
+                else
+                    puts "Error: Button Nr.#{index} does not exist"
                 end
             end
         end
