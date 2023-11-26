@@ -6,12 +6,16 @@ DEBUG = false
 FONT = "data/fonts/TimeburnerBold.ttf"
 THEME = {
     dark: {
-        primary: {r: 235, g: 235, b: 235},
-        secondary: {r: 20, g: 20, b: 20},
+        primary:   {r: 235, g: 235, b: 235},
+        secondary: {r: 20 , g: 20 , b: 20 },
     },
     light: {
+        primary:   {r: 20 , g: 20 , b: 20 },
         secondary: {r: 235, g: 235, b: 235},
-        primary: {r: 20, g: 20, b: 20},
+    },
+    aqua: {
+        primary: {r: 0, g: 100, b: 90},
+        secondary: {r: 20, g: 20, b: 20},
     },
 }
 
@@ -30,21 +34,18 @@ def initialize(args)
     args.state.theme             = :dark
     args.state.two_p_mode        = false
     args.state.p1_and_p2_speed   = 3
-    args.state.ai1_and_ai2_speed = 1.5
-    args.state.win_threshhold    = 5 #How many Points are required for Victory
+    args.state.ai1_and_ai2_speed = 1.4
+    args.state.win_threshhold    = 10 #How many Points are required for Victory
     #saves
     args.state.countdown         = 0
     args.state.rounddelay        = 3
     args.state.last_set_time     = 0
     args.state.scene             = MainMenu.new(args)
+    args.gtk.queue_sound "data/sound/click-button.mp3" if args.state.sound
 end
 
 def window(args)
     args.state.scene = MainMenu.new(args) if args.inputs.keyboard.key_held.escape
     args.gtk.set_window_fullscreen args.state.fullscreen
-    if args.state.theme == :dark
-        args.outputs.background_color = [20, 20, 20]
-    else
-        args.outputs.background_color = [235, 235, 235]
-    end
+    args.outputs.background_color = THEME.fetch(args.state.theme).fetch(:secondary).values_at(:r, :g, :b)
 end
