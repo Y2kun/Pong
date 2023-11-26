@@ -256,7 +256,7 @@ end
 class ClickableReactiveLabel
     include Themed
     attr_accessor :text, :pos, :size, :w, :h, :is_offset, :on_click, :offset_amount
-    def initialize(args, input,text, pos, size, on_click)
+    def initialize(args,text, pos, size, on_click)
         @text = text
         @pos = pos
         @size = size

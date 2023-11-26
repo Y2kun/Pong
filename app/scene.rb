@@ -6,7 +6,7 @@ class MainMenu
         @ai2 = Ai2.new(args)
         @ball = args.state.ball = Ball.new(args, @ai1, @ai2)
         @labels = [ClickableReactiveLabel.new(args, "New Game"     , V[190, 540], 5, lambda{|a| a.state.scene = Game.new(a)}),
-                   ClickableReactiveLabel.new(args, "Continue Game", V[190, 500], 5, lambda{|a| puts "Error: No you dont"}),
+                   ClickableReactiveLabel.new(args, "Continue Game", V[190, 500], 5, lambda{|a| puts "Error: This is currently not implemented"}),
                    ClickableReactiveLabel.new(args, "Options"      , V[190, 460], 5, lambda{|a| a.state.scene = Options.new(a)}),
                    ClickableReactiveLabel.new(args, "Quit Game"    , V[190, 420], 5, lambda{|a| a.gtk.request_quit})]
     end
