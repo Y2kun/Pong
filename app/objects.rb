@@ -1,13 +1,3 @@
-module Themed
-    def primary(args)
-        THEME.fetch(args.state.theme).fetch(:primary)
-    end
-
-    def secondary(args)
-        THEME.fetch(args.state.theme).fetch(:secondary)
-    end
-end
-
 class Paddle
     include Themed
     attr_accessor :width, :heigth, :pos, :velocity, :speed, :score
@@ -16,7 +6,7 @@ class Paddle
         @heigth = 150
         @pos = V[0, args.grid.h * 0.5 - heigth * 0.5]
         @velocity = V[0, 0]
-        @speed = args.state.p1_and_p2_speed
+        @speed = 0
         @score = 0
     end
 
@@ -41,6 +31,7 @@ end
 
 class Player1 < Paddle
     def update(args)
+        @speed = args.state.p1_and_p2_speed
         key = args.inputs.keyboard.key_held
         if key.w
             @velocity += V[0, 1]
@@ -58,6 +49,7 @@ end
 class Player2 < Paddle
     def initialize(args)
         super
+        @speed = args.state.p1_and_p2_speed
         @pos = V[args.grid.w - @width, args.grid.h * 0.5 - @heigth * 0.5]
     end
 
@@ -79,11 +71,11 @@ end
 class Ai1 < Paddle
     def initialize(args)
         super
-        @speed = args.state.ai1_and_ai2_speed
         @tolerance = 20
     end
 
     def update(args)
+        @speed = args.state.ai1_and_ai2_speed
         ball = args.state.ball
         y_center = @pos.y + heigth * 0.5
         y_ball_center = ball.pos.y + ball.heigth * 0.5
@@ -110,11 +102,11 @@ class Ai2 < Paddle
     def initialize(args)
         super
         @pos = V[args.grid.w - width, args.grid.h * 0.5 - heigth * 0.5]
-        @speed = args.state.ai1_and_ai2_speed
         @tolerance = 20
     end
 
     def update(args)
+        @speed = args.state.ai1_and_ai2_speed
         ball = args.state.ball
         y_center = @pos.y + heigth * 0.5
         y_ball_center = ball.pos.y + ball.heigth * 0.5
@@ -138,6 +130,7 @@ class Ai2 < Paddle
 end
 
 class Ball
+    include Themed
     attr_accessor :width, :heigth, :left, :right, :tone, :pos, :velocity, :speed, :possible_sounds
     def initialize(args, left, right)
         @width = 25
@@ -157,11 +150,7 @@ class Ball
     end
 
     def draw(args)
-        if args.state.theme == :dark
-            args.outputs.solids << {x: @pos.x, y: @pos.y, w: @width, h: @heigth, r: 200, g: 200, b: 200}
-        else
-            args.outputs.solids << {x: @pos.x, y: @pos.y, w: @width, h: @heigth, r: 55, g: 55, b: 55}
-        end
+        args.outputs.solids << tertiary(args).merge(x: @pos.x, y: @pos.y, w: @width, h: @heigth)
     end
 
     def hitbox
@@ -217,195 +206,3 @@ class Ball
         args.gtk.queue_sound "data/sound/#{possible_sounds.sample}.mp3" if args.state.sound
     end
 end
-
-class ReactiveLabel
-    include Themed
-    attr_accessor :text, :pos, :size, :w, :h, :is_offset, :offset_amount
-    def initialize(args, text, pos, size)
-        @text = text
-        @pos = pos
-        @size = size
-        @w, @h = args.gtk.calcstringbox(@text, @size, FONT)
-        @is_offset = false
-        @offset_amount = 5
-    end
-
-    def update(args)
-        if args.inputs.mouse.intersect_rect?({x: @pos.x, y: @pos.y - @h, w: @w, h: @h})
-            @is_offset = true
-        else
-            @is_offset = false
-        end
-    end
-
-    def draw(args)
-        if @is_offset
-            pos = @pos - V[@offset_amount, 0]
-            size = @size + @offset_amount
-            w, h = args.gtk.calcstringbox(@text, size, FONT)
-
-            args.outputs.labels  << primary(args).merge(x: pos.x, y: pos.y, text: @text, size_enum: size, font: FONT)
-            args.outputs.borders << primary(args).merge(x: pos.x, y: pos.y - h, w: w, h: h) if DEBUG
-        else
-            args.outputs.labels  << primary(args).merge(x: @pos.x, y: @pos.y, text: @text, size_enum: @size, font: FONT)
-            args.outputs.borders << primary(args).merge(x: @pos.x, y: @pos.y - @h, w: @w, h: @h) if DEBUG
-        end
-    end
-end
-
-class ClickableReactiveLabel
-    include Themed
-    attr_accessor :text, :pos, :size, :w, :h, :is_offset, :on_click, :offset_amount
-    def initialize(args,text, pos, size, on_click)
-        @text = text
-        @pos = pos
-        @size = size
-        @w, @h = args.gtk.calcstringbox(@text, @size, FONT)
-        @is_offset = false
-        @on_click = on_click
-        @offset_amount = 5
-    end
-
-    def update(args)
-        if args.inputs.mouse.intersect_rect?({x: @pos.x, y: @pos.y - @h, w: @w, h: @h})
-            @is_offset = true
-            if args.inputs.mouse.click
-                @on_click && @on_click.call(args)
-                args.gtk.queue_sound "data/sound/click-button.mp3" if args.state.sound
-            end
-        else
-            @is_offset = false
-        end
-    end
-
-    def draw(args)
-        if @is_offset
-            pos = @pos - V[@offset_amount, 0]
-            size = @size + @offset_amount
-            w, h = args.gtk.calcstringbox(@text, size, FONT)
-
-            args.outputs.labels  << primary(args).merge(x: pos.x, y: pos.y, text: @text, size_enum: size, font: FONT)
-            args.outputs.borders << primary(args).merge(x: pos.x, y: pos.y - h, w: w, h: h) if DEBUG
-        else
-            args.outputs.labels  << primary(args).merge(x: @pos.x, y: @pos.y, text: @text, size_enum: @size, font: FONT)
-            args.outputs.borders << primary(args).merge(x: @pos.x, y: @pos.y - @h, w: @w, h: @h) if DEBUG
-        end
-    end
-end
-
-class SwitchWithLabel
-    include Themed
-    attr_accessor :text, :pos, :switch_width, :switch_height, :text_size, :text_width, :text_height, :enable_condition, :is_offset
-    def initialize(args, text, pos, switch_width, switch_height, text_size, enable_condition)
-        @text = text
-        @switch_pos = pos
-        @switch_width = switch_width
-        @switch_height = switch_height
-        @text_size = text_size
-        @text_width, @text_height = args.gtk.calcstringbox(@text, @text_size, FONT)
-        @text_pos = V[@switch_pos.x + @switch_width * 1.15, @switch_pos.y + @switch_height * 0.8]
-        @enable_condition = enable_condition
-        @is_offset = false
-        @offset_amount = 5
-    end
-
-    def update(args)
-        if args.inputs.mouse.intersect_rect?(x: @text_pos.x - @switch_width, y: @text_pos.y - @text_height, w: @text_width * 1.7, h: @text_height)
-            @is_offset = true
-        else
-            @is_offset = false
-        end         
-
-        if args.inputs.mouse.intersect_rect?(x: @switch_pos.x, y: @switch_pos.y, w: @switch_width, h: @switch_height) && args.inputs.mouse.click
-            case args.state.send(@enable_condition)
-            when NilClass
-                args.gtk.notify! "Error: No Enable Condition set for Object Swl, with the text [ #{@text} ]"
-                puts "Swl stands for Switch with label"
-            when String
-                args.gtk.notify! "Error: Enable Condition for Object Swl, with the text [ #{@text} ], is a String"
-                puts "Swl stands for Switch with label"
-            when true, false
-                args.state.send("#{@enable_condition}=", !args.state.send(@enable_condition))
-                args.gtk.queue_sound "data/sound/click-button.mp3" if args.state.sound
-            else
-                puts args.state.send(@enable_condition)
-            end
-        end
-    end
-
-    def draw(args)
-        args.outputs.solids  << primary(args).merge(x: @switch_pos.x + @switch_width * 0.15, y: @switch_pos.y + @switch_height * 0.15,
-                                                    w: @switch_width * 0.7, h: @switch_height * 0.7) if args.state.send(@enable_condition)
-        args.outputs.borders << primary(args).merge(x: @switch_pos.x, y: @switch_pos.y, w: @switch_width, h: @switch_height)
-
-        if @is_offset
-            pos = @text_pos - V[@offset_amount, 0]
-            size = @text_size + @offset_amount
-            w, h = args.gtk.calcstringbox(@text, size, FONT)
-
-            args.outputs.labels  << primary(args).merge(x: pos.x, y: pos.y, text: @text, size_enum: size, font: FONT)
-            args.outputs.borders << primary(args).merge(x: pos.x - @switch_width, y: pos.y - @text_height, w: w + @switch_width, h: @text_height) if DEBUG
-        else
-            args.outputs.labels  << primary(args).merge(x: @text_pos.x, y: @text_pos.y, text: @text, size_enum: @text_size, font: FONT)
-            args.outputs.borders << primary(args).merge(x: @text_pos.x, y: @text_pos.y - @text_height, w: @text_width, h: @text_height) if DEBUG
-        end
-    end
-end
-
-# class IncrementableLabel
-#     include Themed
-#     attr_accessor :text, :pos, :switch_width, :switch_height, :text_size, :text_width, :text_height, :enable_condition, :is_offset
-#     def initialize(args, text, pos, switch_width, switch_height, text_size, enable_condition)
-#         @text = text
-#         @switch_pos = pos
-#         @switch_width = switch_width
-#         @switch_height = switch_height
-#         @text_size = text_size
-#         @text_width, @text_height = args.gtk.calcstringbox(@text, @text_size, FONT)
-#         @text_pos = V[@switch_pos.x + @switch_width * 1.15, @switch_pos.y + @switch_height * 0.8]
-#         @enable_condition = enable_condition
-#         @is_offset = false
-#         @offset_amount = 5
-#     end
-
-#     def update(args)
-#         if args.inputs.mouse.intersect_rect?(x: @text_pos.x - @switch_width, y: @text_pos.y - @text_height, w: @text_width * 1.7, h: @text_height)
-#             @is_offset = true
-#         else
-#             @is_offset = false
-#         end
-
-#         if args.inputs.mouse.intersect_rect?(x: @switch_pos.x, y: @switch_pos.y, w: @switch_width, h: @switch_height) && args.inputs.mouse.click
-#             case args.state.send(@enable_condition)
-#             when NilClass
-#                 puts "Error: No Enable Condition set for Object Swl, with the text [ #{@text} ]"
-#                 puts "Swl stands for Switch with label"
-#             when String
-#                 puts "Error: Enable Condition for Object Swl, with the text [ #{@text} ], is a String"
-#                 puts "Swl stands for Switch with label"
-#             when true, false
-#                 args.state.send("#{@enable_condition}=", !args.state.send(@enable_condition))
-#             else
-#                 puts args.state.send(@enable_condition)
-#             end
-#         end
-#     end
-
-#     def draw(args)
-#         args.outputs.solids  << primary(args).merge(x: @switch_pos.x + @switch_width * 0.15, y: @switch_pos.y + @switch_height * 0.15,
-#                                                     w: @switch_width * 0.7, h: @switch_height * 0.7) if args.state.send(@enable_condition)
-#         args.outputs.borders << primary(args).merge(x: @switch_pos.x, y: @switch_pos.y, w: @switch_width, h: @switch_height)
-
-#         if @is_offset
-#             pos = @text_pos - V[@offset_amount, 0]
-#             size = @text_size + @offset_amount
-#             w, h = args.gtk.calcstringbox(@text, size, FONT)
-
-#             args.outputs.labels  << primary(args).merge(x: pos.x, y: pos.y, text: @text, size_enum: size, font: FONT)
-#             args.outputs.borders << primary(args).merge(x: pos.x - @switch_width, y: pos.y - @text_height, w: w + @switch_width, h: @text_height) if DEBUG
-#         else
-#             args.outputs.labels  << primary(args).merge(x: @text_pos.x, y: @text_pos.y, text: @text, size_enum: @text_size, font: FONT)
-#             args.outputs.borders << primary(args).merge(x: @text_pos.x, y: @text_pos.y - @text_height, w: @text_width, h: @text_height) if DEBUG
-#         end
-#     end
-# end

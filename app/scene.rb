@@ -42,9 +42,12 @@ class Options
         @ai1 = Ai1.new(args)
         @ai2 = Ai2.new(args)
         @ball = args.state.ball = Ball.new(args, @ai1, @ai2)
-        @switches_with_labels = [SwitchWithLabel.new(args, "Fullscreen", V[320, 500], 50, 50, 5, :fullscreen),
-                                 SwitchWithLabel.new(args, "Sound"     , V[320, 440], 50, 50, 5, :sound),
-                                 SwitchWithLabel.new(args, "2 Player"  , V[320, 380], 50, 50, 5, :two_p_mode),]
+        @configs = [SwitchWithLabel.new(args, "Fullscreen", V[320, 500], 50, 50, 5, :fullscreen),
+                    SwitchWithLabel.new(args, "Sound"     , V[320, 440], 50, 50, 5, :sound),
+                    SwitchWithLabel.new(args, "2 Player"  , V[320, 380], 50, 50, 5, :two_p_mode),
+                    SimpleArithmaticLabel.new(args, "Required Score, 0 = unlimited", V[320, 320], 50, 50, 5, 1, :win_threshhold),
+                    SimpleArithmaticLabel.new(args, "Player Speeds"             , V[320, 260], 50, 50, 5, 0.1, :p1_and_p2_speed),
+                    SimpleArithmaticLabel.new(args, "Ai Speeds"               , V[320, 200], 50, 50, 5, 0.1, :ai1_and_ai2_speed),]
     end
     
     def update(args)
@@ -52,8 +55,8 @@ class Options
         @ai2.update(args)
         @ball.update(args)
 
-        @switches_with_labels.each do |switch_with_label|
-            switch_with_label.update(args)
+        @configs.each do |config|
+            config.update(args)
         end
     end
 
@@ -62,16 +65,13 @@ class Options
         @ai2.draw(args)
         @ball.draw(args)
 
-        @switches_with_labels.each do |switch_with_label|
-            switch_with_label.draw(args)
+        @configs.each do |config|
+            config.draw(args)
         end
 
         args.outputs.labels << primary(args).merge(x: 575, y: 640, text: "Options", size_enum: 15    , font: FONT)
         args.outputs.labels << primary(args).merge(x: 50 , y: 50 , text: "Esc to return to Main Menu", font: FONT)
 
-        # text: "Required Score"
-        # text: "Player Speeds"
-        # text: "Ai Speeds"
         # theme
         # maybe volueme
     end
@@ -79,7 +79,7 @@ end
 
 class Game
     include Themed
-    attr_accessor :left, :right, :ball, :tone
+    attr_accessor :left, :right, :ball
     def initialize(args)
         @left = Player1.new(args)
         if args.state.two_p_mode
@@ -93,8 +93,9 @@ class Game
     end
 
     def update(args)
-        args.state.scene = Win.new(args, winning_player) if winning_player = winner(args)
-
+        if args.state.win_threshhold < 0 && (winning_player = winner(args)) # Don't compact winning breaks
+            args.state.scene = Win.new(args, winning_player)
+        end
         if args.state.last_set_time + args.state.countdown <= Time.new()
             @left.update(args)
             @right.update(args)
@@ -116,7 +117,7 @@ class Game
     end
 
     def winner(args)
-        [@left, @right].compact.find{|e| e.score >= args.state.win_threshhold }
+        [@left, @right].compact.find{|p| p.score >= args.state.win_threshhold}
     end
 end
 
