@@ -184,13 +184,14 @@ class SimpleArithmaticLabel # when reused need to change many things
     end
 
     def draw(args)
-        # template
-        # args.outputs.solids  << primary(args).merge(x: @switch_pos.x + @switch_width * 0.15, y: @switch_pos.y + @switch_height * 0.15,
-        #                                             w: @switch_width * 0.7, h: @switch_height * 0.7)
         args.outputs.borders << primary(args).merge(x: @switch_pos.x, y: @switch_pos.y, w: @switch_width, h: @switch_height)
-        # space for plus button
+        args.outputs.solids  << primary(args).merge(x: @switch_pos.x + @switch_width * 0.15, y: @switch_pos.y + @switch_height * 0.45,
+                                                    w: @switch_width * 0.7, h: @switch_height * 0.1)
+        args.outputs.solids  << primary(args).merge(x: @switch_pos.x + @switch_width * 0.45, y: @switch_pos.y + @switch_height * 0.15,
+                                                    w: @switch_width * 0.1, h: @switch_height * 0.7)
         args.outputs.borders << primary(args).merge(x: @switch_pos.x - 100, y: @switch_pos.y, w: @switch_width, h: @switch_height)
-        # space for minus button
+        args.outputs.solids  << primary(args).merge(x: @switch_pos.x + @switch_width * 0.15 - 100, y: @switch_pos.y + @switch_height * 0.45,
+                                                    w: @switch_width * 0.7, h: @switch_height * 0.1)
         number = args.state.send(@changing_var).round(1)
         @number_text_width, @number_text_height = args.gtk.calcstringbox(@text, @text_size, FONT)
         args.outputs.labels  << primary(args).merge(x: @switch_pos.x - @switch_width * 0.66, y: @switch_pos.y + @number_text_height, text: number, size_enum: @text_size, font: FONT)
