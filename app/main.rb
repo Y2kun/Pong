@@ -33,15 +33,15 @@ def tick args
 end
 
 def initialize(args)
-    #config data
+    #Settings
     args.state.fullscreen        = true
     args.state.sound             = true
     args.state.two_p_mode        = false
     args.state.p1_and_p2_speed   = 3
     args.state.ai1_and_ai2_speed = 1.4
     args.state.win_threshhold    = 10
-    args.state.theme             = :dark # still not changable
-    #saves
+    args.state.theme             = :dark
+    #Values for the Program
     args.state.countdown         = 0
     args.state.rounddelay        = 3
     args.state.last_set_time     = 0

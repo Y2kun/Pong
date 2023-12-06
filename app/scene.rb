@@ -1,6 +1,6 @@
 class MainMenu
     include Themed
-    attr_accessor :ai1, :ai2, :ball
+    attr_accessor :ai1, :ai2, :ball, :labels
     def initialize(args)
         @ai1 = Ai1.new(args)
         @ai2 = Ai2.new(args)
@@ -37,7 +37,7 @@ end
 
 class Options
     include Themed
-    attr_accessor :ai1, :ai2, :ball, :tone
+    attr_accessor :ai1, :ai2, :ball, :configs
     def initialize(args)
         @ai1 = Ai1.new(args)
         @ai2 = Ai2.new(args)
@@ -46,8 +46,9 @@ class Options
                     SwitchWithLabel.new(args, "Sound"     , V[320, 440], 50, 50, 5, :sound),
                     SwitchWithLabel.new(args, "2 Player"  , V[320, 380], 50, 50, 5, :two_p_mode),
                     SimpleArithmaticLabel.new(args, "Required Score, 0 = unlimited", V[320, 320], 50, 50, 5, 1, :win_threshhold),
-                    SimpleArithmaticLabel.new(args, "Player Speeds"             , V[320, 260], 50, 50, 5, 0.1, :p1_and_p2_speed),
-                    SimpleArithmaticLabel.new(args, "Ai Speeds"               , V[320, 200], 50, 50, 5, 0.1, :ai1_and_ai2_speed),]
+                    SimpleArithmaticLabel.new(args, "Player Speeds", V[320, 260], 50, 50, 5, 0.1, :p1_and_p2_speed),
+                    SimpleArithmaticLabel.new(args, "Ai Speeds", V[320, 200], 50, 50, 5, 0.1, :ai1_and_ai2_speed),
+                    CyclableLabel.new(args, "Theme", V[320, 140], 50, 50, 5, :theme, [:dark, :light, :aqua]),] # Read the array in the function to improve
     end
     
     def update(args)
@@ -93,9 +94,10 @@ class Game
     end
 
     def update(args)
-        if args.state.win_threshhold < 0 && (winning_player = winner(args)) # Don't compact winning breaks
+        if args.state.win_threshhold > 0 && winning_player = winner(args)
             args.state.scene = Win.new(args, winning_player)
         end
+
         if args.state.last_set_time + args.state.countdown <= Time.new()
             @left.update(args)
             @right.update(args)
@@ -117,7 +119,7 @@ class Game
     end
 
     def winner(args)
-        [@left, @right].compact.find{|p| p.score >= args.state.win_threshhold}
+        return [@left, @right].compact.find{|p| p.score >= args.state.win_threshhold}
     end
 end
 
@@ -135,7 +137,7 @@ class Win
 
     def draw(args)
         args.outputs.primitives << secondary(args).merge(primitive_marker: :solid, x: 0, y: 0, w: args.grid.w, h: args.grid.h)
-        args.outputs.labels << primary(args).merge(x: 530, y: 420, text: "Victory for #{winning_player}"   , size_enum: 10, font: FONT)
+        args.outputs.labels << primary(args).merge(x: 530, y: 420, text: "Victory for #{@winning_player}"   , size_enum: 10, font: FONT)
         args.outputs.labels << primary(args).merge(x: 30 , y: 685, text: "Press Esc to return to Main Menu", font: FONT)
         args.outputs.labels << primary(args).merge(x: 30 , y: 650, text: "Press R to Restart"              , font: FONT)
     end

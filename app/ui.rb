@@ -172,12 +172,12 @@ class SimpleArithmaticLabel # when reused need to change many things
 
         if args.inputs.mouse.click
             if args.inputs.mouse.intersect_rect?(x: @switch_pos.x, y: @switch_pos.y, w: @switch_width, h: @switch_height)
-                args.state.send("#{@changing_var}=", args.state.send(changing_var) + @var_change_amount)
+                args.state.send("#{@changing_var}=", args.state.send(@changing_var) + @var_change_amount)
                 args.gtk.queue_sound "data/sound/click-button.mp3" if args.state.sound
             end
 
             if args.state.send(@changing_var) > 0 && args.inputs.mouse.intersect_rect?(x: @switch_pos.x - 100, y: @switch_pos.y, w: @switch_width, h: @switch_height)
-                args.state.send("#{@changing_var}=", args.state.send(changing_var) - @var_change_amount)
+                args.state.send("#{@changing_var}=", args.state.send(@changing_var) - @var_change_amount)
                 args.gtk.queue_sound "data/sound/click-button.mp3" if args.state.sound
             end
         end
@@ -195,6 +195,76 @@ class SimpleArithmaticLabel # when reused need to change many things
         number = args.state.send(@changing_var).round(1)
         @number_text_width, @number_text_height = args.gtk.calcstringbox(@text, @text_size, FONT)
         args.outputs.labels  << primary(args).merge(x: @switch_pos.x - @switch_width * 0.66, y: @switch_pos.y + @number_text_height, text: number, size_enum: @text_size, font: FONT)
+
+        if @is_offset
+            pos = @text_pos - V[@offset_amount, 0]
+            size = @text_size + @offset_amount
+            w, h = args.gtk.calcstringbox(@text, size, FONT)
+
+            args.outputs.labels  << primary(args).merge(x: pos.x, y: pos.y, text: @text, size_enum: size, font: FONT)
+            args.outputs.borders << primary(args).merge(x: pos.x - @switch_width * 3, y: pos.y - @text_height, w: w + @switch_width * 3, h: @text_height) if DEBUG
+        else
+            args.outputs.labels  << primary(args).merge(x: @text_pos.x, y: @text_pos.y, text: @text, size_enum: @text_size, font: FONT)
+            args.outputs.borders << primary(args).merge(x: @text_pos.x, y: @text_pos.y - @text_height, w: @text_width, h: @text_height) if DEBUG
+        end
+    end
+end
+
+class CyclableLabel # when reused need to change many things
+    include Themed
+    attr_accessor :text, :pos, :switch_width, :switch_height, :text_size, :text_width, :text_height, :changing_var, :var_options, :current_option, :option_index, :is_offset
+    def initialize(args, text, pos, switch_width, switch_height, text_size, changing_var, var_options)
+        @text = text
+        @switch_pos = pos
+        @switch_width = switch_width
+        @switch_height = switch_height
+        @text_size = text_size
+        @text_width, @text_height = args.gtk.calcstringbox(@text, @text_size, FONT)
+        @text_pos = V[@switch_pos.x + @switch_width * 1.15, @switch_pos.y + @switch_height * 0.8]
+        @changing_var = changing_var
+        @var_options = var_options
+        @option_index = @var_options.find_index(args.state.send(@changing_var))
+        @current_option = @var_options[@option_index]
+        @is_offset = false
+        @offset_amount = 5
+    end
+
+    def update(args)
+        if args.inputs.mouse.intersect_rect?(x: @text_pos.x - @switch_width * 3, y: @text_pos.y - @text_height, w: @text_width * 2.28, h: @text_height)
+            @is_offset = true
+        else
+            @is_offset = false
+        end
+
+        if args.inputs.mouse.click
+            if @option_index < @var_options.count() - 1 && args.inputs.mouse.intersect_rect?(x: @switch_pos.x, y: @switch_pos.y, w: @switch_width, h: @switch_height)
+                @option_index += 1
+                args.gtk.queue_sound "data/sound/click-button.mp3" if args.state.sound
+            end
+
+            if @option_index > 0 && args.inputs.mouse.intersect_rect?(x: @switch_pos.x - 100, y: @switch_pos.y, w: @switch_width, h: @switch_height)
+                @option_index -= 1
+                args.gtk.queue_sound "data/sound/click-button.mp3" if args.state.sound
+            end
+
+            @current_option = @var_options[@option_index]
+            args.state.send("#{@changing_var}=", @current_option)
+        end
+    end
+
+    def draw(args)
+        args.outputs.borders << primary(args).merge(x: @switch_pos.x, y: @switch_pos.y, w: @switch_width, h: @switch_height)
+        args.outputs.solids  << primary(args).merge(x: @switch_pos.x + @switch_width * 0.15, y: @switch_pos.y + @switch_height * 0.45,
+                                                    w: @switch_width * 0.7, h: @switch_height * 0.1)
+        args.outputs.solids  << primary(args).merge(x: @switch_pos.x + @switch_width * 0.45, y: @switch_pos.y + @switch_height * 0.15,
+                                                    w: @switch_width * 0.1, h: @switch_height * 0.7)
+        args.outputs.borders << primary(args).merge(x: @switch_pos.x - 100, y: @switch_pos.y, w: @switch_width, h: @switch_height)
+        args.outputs.solids  << primary(args).merge(x: @switch_pos.x + @switch_width * 0.15 - 100, y: @switch_pos.y + @switch_height * 0.45,
+                                                    w: @switch_width * 0.7, h: @switch_height * 0.1)
+
+        setting = @current_option.to_s
+        setting_width, setting_height = args.gtk.calcstringbox(setting, @text_size, FONT)
+        args.outputs.labels  << primary(args).merge(x: @switch_pos.x - @switch_width * 0.9, y: @switch_pos.y + setting_height, text: setting, size_enum: @text_size, font: FONT)
 
         if @is_offset
             pos = @text_pos - V[@offset_amount, 0]
