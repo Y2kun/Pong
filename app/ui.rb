@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Themed
     def primary(args)
         THEME.fetch(args.state.theme).fetch(:primary)
@@ -12,7 +14,8 @@ module Themed
     end
 end
 
-class ReactiveLabel # generalized, except FONT
+ # generalized, except FONT
+ class ReactiveLabel
     include Themed
     attr_accessor :text, :pos, :size, :w, :h, :is_offset, :offset_amount
     def initialize(args, text, pos, size)

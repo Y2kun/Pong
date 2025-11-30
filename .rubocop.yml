@@ -1,0 +1,8 @@
+AllCops:
+  NewCops: enable
+
+Style/RedundantFileExtensionInRequire:
+  Enabled: false
+
+Naming/MethodParameterName:
+  Enabled: false
