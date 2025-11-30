@@ -63,7 +63,7 @@ class Options
                                           :win_threshhold),
                 SimpleArithmaticLabel.new(args, 'Player Speeds', V[320, 260], 50, 50, 5, 0.1, :p1_and_p2_speed),
                 SimpleArithmaticLabel.new(args, 'Ai Speeds', V[320, 200], 50, 50, 5, 0.1, :ai1_and_ai2_speed),
-                CyclableLabel.new(args, 'Theme', V[320, 140], 50, 50, 5, :theme, %i[dark light aqua])] # Read the array in the function to improve
+                CyclableLabel.new(args, 'Theme', V[320, 140], 50, 50, 5, :theme, THEME.keys)] # Read the array in the function to improve
   end
 
   def update(args)

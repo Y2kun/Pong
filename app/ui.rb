@@ -264,10 +264,10 @@ class CyclableLabel
 
     return unless args.inputs.mouse.click
 
-    if @option_index < @var_options.count - 1 && args.inputs.mouse.intersect_rect?(x: @switch_pos.x,
-                                                                                   y: @switch_pos.y, w: @switch_width, h: @switch_height)
-      option_index
-      rgs.gtk.queue_sound 'data/sound/click-button.mp3' if args.state.sound
+    if @option_index < @var_options.count - 1 && args.inputs.mouse.intersect_rect?(x: @switch_pos.x, y: @switch_pos.y,
+                                                                                   w: @switch_width, h: @switch_height)
+      @option_index += 1
+      args.gtk.queue_sound 'data/sound/click-button.mp3' if args.state.sound
     end
 
     if @option_index.positive? && args.inputs.mouse.intersect_rect?(x: @switch_pos.x - 100, y: @switch_pos.y,

@@ -6,7 +6,7 @@ require 'app/ui.rb'
 require 'app/objects.rb'
 require 'app/scene.rb'
 
-CONFIG_PATH = 'config.json'
+# CONFIG_PATH = 'config.json'
 DEBUG = false
 FONT = 'data/fonts/TimeburnerBold.ttf'
 THEME = {
