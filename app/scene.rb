@@ -9,16 +9,18 @@ class MainMenu
     @ai1 = Ai1.new(args)
     @ai2 = Ai2.new(args)
     @ball = args.state.ball = Ball.new(args, @ai1, @ai2)
-    @labels = [ClickableReactiveLabel.new(args, 'New Game', V[190, 540], 5, lambda { |a|
-      a.state.scene = Game.new(a)
-    }),
-               ClickableReactiveLabel.new(args, 'Continue Game', V[190, 500], 5, lambda { |_a|
-                 puts 'Error: This is currently not implemented'
-               }),
-               ClickableReactiveLabel.new(args, 'Options', V[190, 460], 5, lambda { |a|
-                 a.state.scene = Options.new(a)
-               }),
-               ClickableReactiveLabel.new(args, 'Quit Game', V[190, 420], 5, ->(a) { a.gtk.request_quit })]
+    @labels = [
+      ClickableReactiveLabel.new(args, 'New Game', V[190, 540], 5, lambda { |a|
+        a.state.scene = Game.new(a)
+      }),
+      ClickableReactiveLabel.new(args, 'Continue Game', V[190, 500], 5, lambda { |_a|
+        puts 'Error: This is currently not implemented'
+      }),
+      ClickableReactiveLabel.new(args, 'Options', V[190, 460], 5, lambda { |a|
+        a.state.scene = Options.new(a)
+      }),
+      ClickableReactiveLabel.new(args, 'Quit Game', V[190, 420], 5, ->(a) { a.gtk.request_quit })
+    ]
   end
 
   def update(args)
@@ -45,6 +47,7 @@ class MainMenu
   end
 end
 
+# The Options Scene
 class Options
   include Themed
   attr_accessor :ai1, :ai2, :ball, :configs
@@ -90,6 +93,7 @@ class Options
   end
 end
 
+# The Game Scene
 class Game
   include Themed
   attr_accessor :left, :right, :ball
@@ -107,7 +111,7 @@ class Game
   end
 
   def update(args)
-    if args.state.win_threshhold.positive? && winning_player = winner(args)
+    if args.state.win_threshhold.positive? && (winning_player = winner(args))
       args.state.scene = Win.new(args, winning_player)
     end
 
@@ -130,7 +134,7 @@ class Game
     return if args.state.last_set_time + args.state.countdown <= Time.new
 
     args.outputs.labels << primary(args).merge(x: 630, y: 470,
-                                               text: "#{(args.state.last_set_time + args.state.countdown - Time.new).ceil}", size_enum: 30, font: FONT)
+                                               text: (args.state.last_set_time + args.state.countdown - Time.new).ceil.to_s, size_enum: 30, font: FONT)
   end
 
   def winner(args)
@@ -138,6 +142,7 @@ class Game
   end
 end
 
+# Displaying the Win
 class Win
   include Themed
   attr_accessor :winning_player

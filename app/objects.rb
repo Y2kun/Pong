@@ -91,9 +91,7 @@ class Ai1 < Paddle
       args.outputs.primitives << { primitive_marker: :solid, x: @pos.x, y: target.y, w: @width, h: 5, r: 75, g: 75,
                                    b: 75 }
     end
-    unless y_center.between?(y_ball_center - @tolerance, y_ball_center + @tolerance)
-      @velocity += (target - V[0, y_center]).normalize
-    end
+    @velocity += (target - V[0, y_center]).normalize unless y_center.between?(y_ball_center - @tolerance, y_ball_center + @tolerance)
     super
   end
 
@@ -129,9 +127,7 @@ class Ai2 < Paddle
       args.outputs.primitives << { primitive_marker: :solid, x: @pos.x, y: target.y, w: @width, h: 5, r: 75, g: 75,
                                    b: 75 }
     end
-    unless y_center.between?(y_ball_center - @tolerance, y_ball_center + @tolerance)
-      @velocity += (target - V[0, y_center]).normalize
-    end
+    @velocity += (target - V[0, y_center]).normalize unless y_center.between?(y_ball_center - @tolerance, y_ball_center + @tolerance)
     super
   end
 

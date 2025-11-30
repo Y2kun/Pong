@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-# require 'json'
-
 require 'app/v.rb'
 require 'app/ui.rb'
 
